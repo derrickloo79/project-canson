@@ -1,0 +1,18 @@
+Rails.application.routes.draw do
+  devise_for :users
+
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  resources :events do
+    member do
+      get   :step1
+      get   :step2
+      get   :step3
+      patch :update_step1
+      patch :update_step2
+      patch :update_step3
+    end
+  end
+
+  root to: "pages#home"
+end

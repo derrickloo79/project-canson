@@ -1,0 +1,104 @@
+<% content_for :title, "#{@event.event_name} — FlexiLabour" %>
+
+<div class="max-w-3xl mx-auto">
+  <div class="flex items-start justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold"><%= @event.event_name %></h1>
+      <div class="flex items-center gap-2 mt-1 text-base-content/60 text-sm">
+        <%= @event.event_date&.strftime("%A, %-d %B %Y") %>
+        <% if @event.multi_day? && @event.event_end_date %>
+          <span>–</span>
+          <%= @event.event_end_date.strftime("%A, %-d %B %Y") %>
+          <span class="badge badge-outline badge-xs">Multi-day</span>
+        <% end %>
+        <span>·</span>
+        <%= @event.venue %>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <%= render "event_status_badge", event: @event %>
+      <%= link_to "Back to Events", events_path, class: "btn btn-ghost btn-sm" %>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+         class="h-6 w-6 shrink-0 stroke-current">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <span>
+      This event has been submitted and is awaiting approval.
+      Full event management tabs will be available once approved.
+    </span>
+  </div>
+
+  <div class="card bg-base-200 shadow-sm mt-6">
+    <div class="card-body">
+      <h2 class="card-title">Event Details</h2>
+      <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mt-2">
+        <dt class="text-base-content/60">Type</dt>
+        <dd><%= @event.event_type&.humanize %></dd>
+
+        <dt class="text-base-content/60">Reference No.</dt>
+        <dd><%= @event.reference_number.presence || "—" %></dd>
+
+        <dt class="text-base-content/60">Setup</dt>
+        <dd><%= @event.setup_time&.strftime("%H:%M") || "—" %></dd>
+
+        <dt class="text-base-content/60">Event Start</dt>
+        <dd><%= @event.event_start_time&.strftime("%H:%M") %></dd>
+
+        <dt class="text-base-content/60">Event End</dt>
+        <dd><%= @event.event_end_time&.strftime("%H:%M") %></dd>
+
+        <dt class="text-base-content/60">Teardown</dt>
+        <dd><%= @event.teardown_time&.strftime("%H:%M") || "—" %></dd>
+      </dl>
+
+      <% if @event.description.present? %>
+        <div class="mt-4">
+          <p class="text-base-content/60 text-sm font-medium">Description</p>
+          <p class="mt-1 text-sm"><%= @event.description %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="card bg-base-200 shadow-sm mt-4">
+    <div class="card-body">
+      <h2 class="card-title">
+        Roles
+        <span class="text-base font-normal text-base-content/60">
+          (<%= @event.event_roles.size %> roles,
+           <%= @event.total_vacancies %> vacancies)
+        </span>
+      </h2>
+      <div class="overflow-x-auto mt-2">
+        <table class="table table-sm w-full">
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Vacancies</th>
+              <th>Shift</th>
+              <th>Rate ($/hr)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @event.event_roles.each do |role| %>
+              <tr>
+                <td class="font-medium"><%= role.role_name %></td>
+                <td><%= role.vacancies %></td>
+                <td>
+                  <%= role.shift_start&.strftime("%H:%M") %> –
+                  <%= role.shift_end&.strftime("%H:%M") %>
+                </td>
+                <td><%= role.rate ? number_with_precision(role.rate, precision: 2, delimiter: ",") : "—" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

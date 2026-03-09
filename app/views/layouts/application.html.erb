@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "FlexiLabour" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="FlexiLabour">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-base-100">
+    <nav class="navbar bg-base-200 shadow-sm px-4">
+      <div class="navbar-start">
+        <%= link_to "FlexiLabour", root_path, class: "text-xl font-bold" %>
+      </div>
+      <div class="navbar-end gap-2">
+        <% if user_signed_in? %>
+          <%= link_to "Events", events_path, class: "btn btn-ghost btn-sm" %>
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-sm">
+              <%= current_user.name.presence || current_user.email %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-10 w-40 p-2 shadow">
+              <li>
+                <%= button_to "Sign out", destroy_user_session_path,
+                    method: :delete, class: "btn btn-ghost btn-sm w-full text-left" %>
+              </li>
+            </ul>
+          </div>
+        <% else %>
+          <%= link_to "Sign in", new_user_session_path, class: "btn btn-primary btn-sm" %>
+        <% end %>
+      </div>
+    </nav>
+
+    <% if notice.present? %>
+      <div class="alert alert-success mx-4 mt-4" role="alert">
+        <%= notice %>
+      </div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="alert alert-error mx-4 mt-4" role="alert">
+        <%= alert %>
+      </div>
+    <% end %>
+
+    <main class="container mx-auto px-4 py-8">
+      <%= yield %>
+    </main>
+  </body>
+</html>

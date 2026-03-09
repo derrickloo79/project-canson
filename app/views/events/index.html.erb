@@ -1,0 +1,46 @@
+<% content_for :title, "Events — FlexiLabour" %>
+
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">Events</h1>
+  <%= link_to "Create Event", new_event_path, class: "btn btn-primary" %>
+</div>
+
+<% if @events.empty? %>
+  <div class="text-center py-16 text-base-content/50">
+    <p class="text-lg">No events yet.</p>
+    <p class="mt-1">Create your first event to get started.</p>
+  </div>
+<% else %>
+  <div class="overflow-x-auto">
+    <table class="table table-zebra w-full">
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Type</th>
+          <th>Date</th>
+          <th>Venue</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @events.each do |event| %>
+          <tr>
+            <td class="font-medium"><%= event.event_name.presence || "(untitled draft)" %></td>
+            <td><%= event.event_type&.humanize %></td>
+            <td><%= event.event_date&.strftime("%d %b %Y") %></td>
+            <td><%= event.venue %></td>
+            <td><%= render "event_status_badge", event: event %></td>
+            <td>
+              <% if event.status_draft? %>
+                <%= link_to "Continue", step1_event_path(event), class: "btn btn-ghost btn-xs" %>
+              <% else %>
+                <%= link_to "View", event, class: "btn btn-ghost btn-xs" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

@@ -1,0 +1,58 @@
+<%
+  # role      — the EventRole object (persisted or new)
+  # f         — the nested form builder
+  # index_str — override for the index placeholder (used in <template> tag)
+%>
+<tr data-role-row>
+  <%= f.hidden_field :id %>
+  <%= f.hidden_field :_destroy, value: "0", data: { destroy_field: true } %>
+  <%= f.hidden_field :position, value: role.position.to_i,
+      data: { position_field: true } %>
+
+  <td class="p-1">
+    <%= f.text_field :role_name,
+        class: "input input-bordered input-sm w-full",
+        placeholder: "e.g. Waiter",
+        required: true %>
+  </td>
+  <td class="p-1">
+    <%= f.number_field :vacancies,
+        class: "input input-bordered input-sm w-20",
+        min: 1, placeholder: "0",
+        data: { vacancies: true, action: "input->role-rows#rowChanged" } %>
+  </td>
+  <td class="p-1">
+    <%= f.time_field :shift_start,
+        value: role.shift_start&.strftime("%H:%M"),
+        class: "input input-bordered input-sm",
+        data: { shift_start: true, action: "change->role-rows#rowChanged" } %>
+  </td>
+  <td class="p-1">
+    <%= f.time_field :shift_end,
+        value: role.shift_end&.strftime("%H:%M"),
+        class: "input input-bordered input-sm",
+        data: { shift_end: true, action: "change->role-rows#rowChanged" } %>
+  </td>
+  <td class="p-1">
+    <div class="flex items-center gap-1">
+      <span class="text-base-content/50 text-sm">$</span>
+      <%= f.number_field :rate,
+          value: role.rate,
+          step: "0.01", min: "0",
+          class: "input input-bordered input-sm w-24",
+          placeholder: "0.00" %>
+    </div>
+  </td>
+  <td class="p-1">
+    <%= f.text_field :requirements,
+        class: "input input-bordered input-sm w-full",
+        placeholder: "Any specific requirements..." %>
+  </td>
+  <td class="p-1 text-center">
+    <button type="button"
+            class="btn btn-ghost btn-xs text-error"
+            data-action="click->role-rows#removeRow">
+      ✕
+    </button>
+  </td>
+</tr>

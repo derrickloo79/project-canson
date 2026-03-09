@@ -1,0 +1,120 @@
+<% content_for :title, "Step 3: Review & Submit — FlexiLabour" %>
+
+<div class="max-w-2xl mx-auto">
+  <%= render "step_indicator" %>
+
+  <% if @event.errors.any? %>
+    <div class="alert alert-error mb-4">
+      <ul class="list-disc list-inside">
+        <% @event.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card bg-base-200 shadow-sm mb-4">
+    <div class="card-body">
+      <h2 class="card-title text-xl mb-4">Review Your Event</h2>
+      <p class="text-base-content/60 text-sm mb-6">
+        Please review the details below. Once submitted, the event will be locked
+        from major edits until it is approved or returned to you.
+      </p>
+
+      <%# Event Basics %>
+      <h3 class="font-semibold text-base border-b border-base-300 pb-1 mb-3">Event Basics</h3>
+      <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-6">
+        <dt class="text-base-content/60">Event Name</dt>
+        <dd class="font-medium"><%= @event.event_name %></dd>
+
+        <dt class="text-base-content/60">Event Type</dt>
+        <dd><%= @event.event_type&.humanize %></dd>
+
+        <dt class="text-base-content/60">Date</dt>
+        <dd>
+          <%= @event.event_date&.strftime("%A, %-d %B %Y") %>
+          <% if @event.multi_day? && @event.event_end_date %>
+            <span class="text-base-content/50"> – </span>
+            <%= @event.event_end_date.strftime("%A, %-d %B %Y") %>
+            <span class="badge badge-outline badge-xs ml-1">Multi-day</span>
+          <% end %>
+        </dd>
+
+        <dt class="text-base-content/60">Venue</dt>
+        <dd><%= @event.venue %></dd>
+
+        <% if @event.reference_number.present? %>
+          <dt class="text-base-content/60">Reference No.</dt>
+          <dd><%= @event.reference_number %></dd>
+        <% end %>
+
+        <dt class="text-base-content/60">Setup Time</dt>
+        <dd><%= @event.setup_time&.strftime("%H:%M") || "—" %></dd>
+
+        <dt class="text-base-content/60">Event Start</dt>
+        <dd><%= @event.event_start_time&.strftime("%H:%M") %></dd>
+
+        <dt class="text-base-content/60">Event End</dt>
+        <dd><%= @event.event_end_time&.strftime("%H:%M") %></dd>
+
+        <dt class="text-base-content/60">Teardown Time</dt>
+        <dd><%= @event.teardown_time&.strftime("%H:%M") || "—" %></dd>
+
+        <% if @event.description.present? %>
+          <dt class="text-base-content/60">Description</dt>
+          <dd class="col-span-1"><%= @event.description %></dd>
+        <% end %>
+      </dl>
+
+      <%# Roles %>
+      <h3 class="font-semibold text-base border-b border-base-300 pb-1 mb-3">
+        Roles & Requirements
+        <span class="font-normal text-base-content/60 text-sm ml-2">
+          (<%= @event.event_roles.size %> roles,
+           <%= @event.total_vacancies %> total vacancies)
+        </span>
+      </h3>
+
+      <% if @event.event_roles.any? %>
+        <div class="overflow-x-auto">
+          <table class="table table-sm w-full">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Vacancies</th>
+                <th>Shift</th>
+                <th>Rate ($/hr)</th>
+                <th>Requirements</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @event.event_roles.each do |role| %>
+                <tr>
+                  <td class="font-medium"><%= role.role_name %></td>
+                  <td><%= role.vacancies %></td>
+                  <td>
+                    <%= role.shift_start&.strftime("%H:%M") %> –
+                    <%= role.shift_end&.strftime("%H:%M") %>
+                  </td>
+                  <td><%= role.rate ? number_with_precision(role.rate, precision: 2, delimiter: ",") : "—" %></td>
+                  <td><%= role.requirements.presence || "—" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-base-content/50 text-sm">No roles defined.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="flex justify-between">
+    <%= link_to "← Back to Roles", step2_event_path(@event), class: "btn btn-ghost" %>
+
+    <%= button_to "Submit for Approval", update_step3_event_path(@event),
+        method: :patch, class: "btn btn-primary" do %>
+      Submit for Approval
+    <% end %>
+  </div>
+</div>

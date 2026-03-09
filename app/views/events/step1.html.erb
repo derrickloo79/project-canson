@@ -1,0 +1,114 @@
+<% content_for :title, "Step 1: Event Basics — FlexiLabour" %>
+
+<div class="max-w-2xl mx-auto">
+  <%= render "step_indicator" %>
+
+  <div class="card bg-base-200 shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title text-xl mb-4">Event Basics</h2>
+
+      <% if @event.errors.any? %>
+        <div class="alert alert-error mb-4">
+          <ul class="list-disc list-inside">
+            <% @event.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= form_with model: @event, url: update_step1_event_path(@event),
+          method: :patch do |f| %>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="form-control sm:col-span-2">
+            <%= f.label :event_name, "Event Name", class: "label" %>
+            <%= f.text_field :event_name, class: "input input-bordered w-full",
+                placeholder: "e.g. Smith-Johnson Wedding Dinner" %>
+          </div>
+
+          <div class="form-control">
+            <%= f.label :event_type, "Event Type", class: "label" %>
+            <%= f.select :event_type,
+                Event.event_types.keys.map { |k| [k.humanize, k] },
+                { include_blank: "Select type..." },
+                class: "select select-bordered w-full" %>
+          </div>
+
+          <div class="form-control" data-controller="checkbox-toggle">
+            <%= f.label :event_date, "Event Date", class: "label" %>
+            <%= f.date_field :event_date, class: "input input-bordered w-full" %>
+
+            <label class="label cursor-pointer justify-start gap-3 mt-1">
+              <%= f.check_box :multi_day,
+                  class: "checkbox checkbox-sm",
+                  data: {
+                    "checkbox-toggle-target": "checkbox",
+                    action: "change->checkbox-toggle#toggle"
+                  } %>
+              <span class="label-text">Multi-day event</span>
+            </label>
+
+            <div data-checkbox-toggle-target="content"
+                 class="<%= @event.multi_day? ? '' : 'hidden' %>">
+              <%= f.label :event_end_date, "End Date", class: "label mt-1" %>
+              <%= f.date_field :event_end_date, class: "input input-bordered w-full" %>
+            </div>
+          </div>
+
+          <div class="form-control sm:col-span-2">
+            <%= f.label :venue, "Venue", class: "label" %>
+            <%= f.text_field :venue, class: "input input-bordered w-full",
+                placeholder: "e.g. Grand Ballroom, Level 3" %>
+          </div>
+
+          <div class="form-control">
+            <%= f.label :reference_number, "Internal Reference No.", class: "label" %>
+            <%= f.text_field :reference_number, class: "input input-bordered w-full",
+                placeholder: "e.g. EVT-2026-001" %>
+          </div>
+
+          <div class="form-control">
+            <%= f.label :setup_time, "Setup Time", class: "label" %>
+            <%= f.time_field :setup_time,
+                value: @event.setup_time&.strftime("%H:%M"),
+                class: "input input-bordered w-full" %>
+          </div>
+
+          <div class="form-control">
+            <%= f.label :event_start_time, "Event Start Time", class: "label" %>
+            <%= f.time_field :event_start_time,
+                value: @event.event_start_time&.strftime("%H:%M"),
+                class: "input input-bordered w-full" %>
+          </div>
+
+          <div class="form-control">
+            <%= f.label :event_end_time, "Event End Time", class: "label" %>
+            <%= f.time_field :event_end_time,
+                value: @event.event_end_time&.strftime("%H:%M"),
+                class: "input input-bordered w-full" %>
+          </div>
+
+          <div class="form-control">
+            <%= f.label :teardown_time, "Teardown Time", class: "label" %>
+            <%= f.time_field :teardown_time,
+                value: @event.teardown_time&.strftime("%H:%M"),
+                class: "input input-bordered w-full" %>
+          </div>
+
+          <div class="form-control sm:col-span-2">
+            <%= f.label :description, "Description / Internal Notes", class: "label" %>
+            <%= f.text_area :description, rows: 3,
+                class: "textarea textarea-bordered w-full",
+                placeholder: "Any briefing notes, special instructions, or internal remarks..." %>
+          </div>
+        </div>
+
+        <div class="card-actions justify-between mt-6">
+          <%= link_to "Back to Events", events_path, class: "btn btn-ghost" %>
+          <%= f.submit "Save & Continue →", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

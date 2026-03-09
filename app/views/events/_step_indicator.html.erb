@@ -1,0 +1,22 @@
+<ul class="steps steps-horizontal w-full mb-8">
+  <li class="step <%= @event.wizard_step >= 1 ? 'step-primary' : '' %>">
+    <%= link_to "Event Basics", step1_event_path(@event),
+        class: "hover:underline" %>
+  </li>
+  <li class="step <%= @event.wizard_step >= 2 ? 'step-primary' : '' %>">
+    <% if @event.wizard_step >= 2 %>
+      <%= link_to "Roles & Requirements", step2_event_path(@event),
+          class: "hover:underline" %>
+    <% else %>
+      <span class="text-base-content/40">Roles & Requirements</span>
+    <% end %>
+  </li>
+  <li class="step <%= @event.wizard_step >= 3 ? 'step-primary' : '' %>">
+    <% if @event.wizard_step >= 3 %>
+      <%= link_to "Review & Submit", step3_event_path(@event),
+          class: "hover:underline" %>
+    <% else %>
+      <span class="text-base-content/40">Review & Submit</span>
+    <% end %>
+  </li>
+</ul>
