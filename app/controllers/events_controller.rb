@@ -2,10 +2,10 @@ class EventsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_event, only: %i[show step1 step2 step3
                                      update_step1 update_step2 update_step3
-                                     save_draft]
+                                     save_draft destroy]
   before_action :authorize_ops_manager!, only: %i[new create step1 step2 step3
                                                    update_step1 update_step2 update_step3
-                                                   save_draft]
+                                                   save_draft destroy]
 
   # GET /events
   def index
@@ -70,6 +70,12 @@ class EventsController < ApplicationController
     @event.assign_attributes(draft_params)
     @event.save(validate: false)
     redirect_to events_path, notice: "Draft saved."
+  end
+
+  # DELETE /events/:id
+  def destroy
+    @event.destroy
+    redirect_to events_path, notice: "Event deleted."
   end
 
   # PATCH /events/:id/update_step3

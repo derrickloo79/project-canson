@@ -17,7 +17,7 @@
         <tr>
           <th>Event Name</th>
           <th>Type</th>
-          <th>Date</th>
+          <th>Dates</th>
           <th>Venue</th>
           <th>Status</th>
           <th></th>
@@ -28,15 +28,73 @@
           <tr>
             <td class="font-medium"><%= event.event_name.presence || "(untitled draft)" %></td>
             <td><%= event.event_type&.humanize %></td>
-            <td><%= event.event_date&.strftime("%d %b %Y") %></td>
+            <td>
+              <%= event.event_date&.strftime("%d %b %Y") %>
+              <% if event.multi_day? && event.event_end_date %>
+                <span class="text-base-content/50"> – </span>
+                <%= event.event_end_date.strftime("%d %b %Y") %>
+              <% end %>
+            </td>
             <td><%= event.venue %></td>
             <td><%= render "event_status_badge", event: event %></td>
             <td>
-              <% if event.status_draft? %>
-                <%= link_to "Continue", step1_event_path(event), class: "btn btn-ghost btn-xs" %>
-              <% else %>
-                <%= link_to "View", event, class: "btn btn-ghost btn-xs" %>
-              <% end %>
+              <div class="flex items-center gap-1">
+                <% if event.status_draft? %>
+                  <%= link_to step1_event_path(event),
+                      class: "btn btn-ghost btn-xs btn-square",
+                      title: "Edit" do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 012.828 0l.172.172a2 2 0 010 2.828L12 16H9v-3z" />
+                    </svg>
+                  <% end %>
+                <% else %>
+                  <%= link_to event,
+                      class: "btn btn-ghost btn-xs btn-square",
+                      title: "View" do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  <% end %>
+                <% end %>
+
+                <%# Delete button — triggers confirmation modal %>
+                <button type="button"
+                        class="btn btn-ghost btn-xs btn-square text-error"
+                        title="Delete"
+                        onclick="document.getElementById('delete-modal-<%= event.id %>').showModal()">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4h6v3M4 7h16" />
+                  </svg>
+                </button>
+
+                <%# Confirmation modal %>
+                <dialog id="delete-modal-<%= event.id %>" class="modal">
+                  <div class="modal-box">
+                    <h3 class="font-bold text-lg">Delete event?</h3>
+                    <p class="py-3 text-base-content/70">
+                      "<%= event.event_name.presence || "Untitled draft" %>" will be permanently deleted.
+                      This cannot be undone.
+                    </p>
+                    <div class="modal-action">
+                      <form method="dialog">
+                        <button class="btn btn-ghost">Cancel</button>
+                      </form>
+                      <%= button_to event_path(event), method: :delete,
+                          class: "btn btn-error" do %>
+                        Delete
+                      <% end %>
+                    </div>
+                  </div>
+                  <form method="dialog" class="modal-backdrop">
+                    <button>close</button>
+                  </form>
+                </dialog>
+              </div>
             </td>
           </tr>
         <% end %>
