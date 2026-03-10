@@ -36,7 +36,9 @@
           </div>
 
           <div class="form-control" data-controller="checkbox-toggle">
-            <%= f.label :event_date, "Event Date", class: "label" %>
+            <label class="label" data-checkbox-toggle-target="label"
+                   data-checkbox-toggle-unchecked-text="Event Date"
+                   data-checkbox-toggle-checked-text="Start Date">Event Date</label>
             <%= f.date_field :event_date, class: "input input-bordered w-full" %>
 
             <label class="label cursor-pointer justify-start gap-3 mt-1">
@@ -104,9 +106,14 @@
           </div>
         </div>
 
-        <div class="card-actions justify-between mt-6">
-          <%= link_to "Back to Events", events_path, class: "btn btn-ghost" %>
-          <%= f.submit "Save & Continue →", class: "btn btn-primary" %>
+        <div class="flex items-center justify-between mt-6">
+          <%= link_to "Cancel", events_path, class: "btn btn-ghost" %>
+          <div class="flex items-center gap-2">
+            <%= f.submit "Save Draft",
+                formaction: save_draft_event_path(@event),
+                class: "btn btn-outline" %>
+            <%= f.submit "Next", class: "btn btn-primary" %>
+          </div>
         </div>
       <% end %>
     </div>

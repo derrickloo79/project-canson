@@ -1,9 +1,11 @@
 class EventsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_event, only: %i[show step1 step2 step3
-                                     update_step1 update_step2 update_step3]
+                                     update_step1 update_step2 update_step3
+                                     save_draft]
   before_action :authorize_ops_manager!, only: %i[new create step1 step2 step3
-                                                   update_step1 update_step2 update_step3]
+                                                   update_step1 update_step2 update_step3
+                                                   save_draft]
 
   # GET /events
   def index
@@ -63,6 +65,13 @@ class EventsController < ApplicationController
   def step3
   end
 
+  # PATCH /events/:id/save_draft — save without validation, return to event list
+  def save_draft
+    @event.assign_attributes(draft_params)
+    @event.save(validate: false)
+    redirect_to events_path, notice: "Draft saved."
+  end
+
   # PATCH /events/:id/update_step3
   def update_step3
     @event.wizard_step = 3
@@ -95,6 +104,18 @@ class EventsController < ApplicationController
 
   def step2_params
     params.require(:event).permit(
+      event_roles_attributes: [
+        :id, :role_name, :vacancies, :shift_start,
+        :shift_end, :rate, :requirements, :position, :_destroy
+      ]
+    )
+  end
+
+  def draft_params
+    params.fetch(:event, {}).permit(
+      :event_name, :event_type, :event_date, :event_end_date,
+      :multi_day, :venue, :reference_number, :setup_time,
+      :event_start_time, :event_end_time, :teardown_time, :description,
       event_roles_attributes: [
         :id, :role_name, :vacancies, :shift_start,
         :shift_end, :rate, :requirements, :position, :_destroy

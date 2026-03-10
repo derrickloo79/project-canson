@@ -1,26 +1,19 @@
-<div class="card bg-base-200 shadow-sm h-fit sticky top-4"
+<div class="flex items-center gap-8 bg-base-200 rounded-box px-6 py-3 text-sm"
      data-role-rows-target="summary">
-  <div class="card-body p-4">
-    <h3 class="font-semibold text-base mb-3">Summary</h3>
-
-    <div class="stat p-0 py-2 border-b border-base-300">
-      <div class="stat-title text-xs">Total Roles</div>
-      <div class="stat-value text-2xl" data-summary-roles>0</div>
-    </div>
-
-    <div class="stat p-0 py-2 border-b border-base-300">
-      <div class="stat-title text-xs">Total Vacancies</div>
-      <div class="stat-value text-2xl" data-summary-vacancies>0</div>
-    </div>
-
-    <div class="stat p-0 py-2 border-b border-base-300">
-      <div class="stat-title text-xs">Earliest Shift Start</div>
-      <div class="stat-value text-lg" data-summary-start>—</div>
-    </div>
-
-    <div class="stat p-0 py-2">
-      <div class="stat-title text-xs">Latest Shift End</div>
-      <div class="stat-value text-lg" data-summary-end>—</div>
-    </div>
+  <div class="grow">
+    <span class="text-base-content/50 text-xs uppercase tracking-wide">Roles</span>
+    <div class="font-semibold" data-summary-roles>0</div>
+  </div>
+  <div class="grow">
+    <span class="text-base-content/50 text-xs uppercase tracking-wide">Vacancies</span>
+    <div class="font-semibold" data-summary-vacancies>0</div>
+  </div>
+  <div class="grow">
+    <span class="text-base-content/50 text-xs uppercase tracking-wide">Earliest Start</span>
+    <div class="font-semibold" data-summary-start>—</div>
+  </div>
+  <div class="grow">
+    <span class="text-base-content/50 text-xs uppercase tracking-wide">Latest End</span>
+    <div class="font-semibold" data-summary-end>—</div>
   </div>
 </div>

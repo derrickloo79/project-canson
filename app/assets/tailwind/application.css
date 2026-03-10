@@ -1,2 +1,4 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+.input, .select { height: 2.25rem; }

@@ -10,7 +10,7 @@ import { Controller } from "@hotwired/stimulus"
 //   </div>
 
 export default class extends Controller {
-  static targets = ["checkbox", "content"]
+  static targets = ["checkbox", "content", "label"]
 
   connect() {
     this.toggle()
@@ -19,5 +19,11 @@ export default class extends Controller {
   toggle() {
     const show = this.checkboxTarget.checked
     this.contentTargets.forEach(el => el.classList.toggle("hidden", !show))
+    if (this.hasLabelTarget) {
+      this.labelTargets.forEach(el => {
+        const text = show ? el.dataset.checkboxToggleCheckedText : el.dataset.checkboxToggleUncheckedText
+        if (text) el.textContent = text
+      })
+    }
   }
 }

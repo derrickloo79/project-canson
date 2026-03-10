@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       patch :update_step1
       patch :update_step2
       patch :update_step3
+      patch :save_draft
     end
   end
 

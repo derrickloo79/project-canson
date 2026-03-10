@@ -1,6 +1,6 @@
 <% content_for :title, "Step 2: Roles & Requirements — FlexiLabour" %>
 
-<div class="max-w-6xl mx-auto">
+<div class="max-w-5xl mx-auto">
   <%= render "step_indicator" %>
 
   <% if @event.errors.any? %>
@@ -16,70 +16,71 @@
   <%= form_with model: @event, url: update_step2_event_path(@event),
       method: :patch do |f| %>
 
-    <div class="grid grid-cols-4 gap-6">
-      <%# Roles table — 3/4 width %>
-      <div class="col-span-3"
-           data-controller="role-rows"
-           data-role-rows-index-value="<%= @event.event_roles.size %>">
+    <div data-controller="role-rows"
+         data-role-rows-index-value="<%= @event.event_roles.size %>">
 
-        <div class="card bg-base-200 shadow-sm">
-          <div class="card-body p-4">
-            <div class="flex items-center justify-between mb-3">
-              <h2 class="card-title text-lg">Roles & Requirements</h2>
-              <button type="button"
-                      class="btn btn-outline btn-sm"
-                      data-action="click->role-rows#addRow">
-                + Add Role
-              </button>
-            </div>
+      <%# Summary bar — above the table %>
+      <%= render "summary_panel" %>
 
-            <div class="overflow-x-auto">
-              <table class="table table-sm table-zebra w-full">
-                <thead>
-                  <tr>
-                    <th>Role Name *</th>
-                    <th>Vacancies *</th>
-                    <th>Shift Start *</th>
-                    <th>Shift End *</th>
-                    <th>Rate ($)</th>
-                    <th>Requirements</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody data-role-rows-target="rowContainer">
-                  <%= f.fields_for :event_roles do |role_f| %>
-                    <%= render "role_row", f: role_f, role: role_f.object %>
-                  <% end %>
-                </tbody>
-              </table>
-            </div>
-
-            <% if @event.event_roles.empty? %>
-              <p class="text-base-content/50 text-sm text-center py-4"
-                 data-empty-message>
-                No roles added yet. Click "+ Add Role" to get started.
-              </p>
-            <% end %>
+      <%# Roles table %>
+      <div class="card bg-base-200 shadow-sm mt-4">
+        <div class="card-body p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="card-title text-lg">Roles & Requirements</h2>
+            <button type="button"
+                    class="btn btn-outline btn-sm"
+                    data-action="click->role-rows#addRow">
+              + Add Role
+            </button>
           </div>
-        </div>
 
-        <%# Hidden template for new rows — cloned by Stimulus %>
-        <template data-role-rows-target="template">
-          <%= f.fields_for :event_roles, EventRole.new,
-              child_index: "NEW_RECORD" do |role_f| %>
-            <%= render "role_row", f: role_f, role: role_f.object %>
+          <div class="overflow-x-auto">
+            <table class="table table-sm table-zebra w-full">
+              <thead>
+                <tr>
+                  <th>Role Name *</th>
+                  <th>Vacancies *</th>
+                  <th>Shift Start *</th>
+                  <th>Shift End *</th>
+                  <th>Rate ($)</th>
+                  <th>Requirements</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody data-role-rows-target="rowContainer">
+                <%= f.fields_for :event_roles do |role_f| %>
+                  <%= render "role_row", f: role_f, role: role_f.object %>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+
+          <% if @event.event_roles.empty? %>
+            <p class="text-base-content/50 text-sm text-center py-4"
+               data-empty-message>
+              No roles added yet. Click "+ Add Role" to get started.
+            </p>
           <% end %>
-        </template>
-
-        <div class="card-actions justify-between mt-4">
-          <%= link_to "← Back", step1_event_path(@event), class: "btn btn-ghost" %>
-          <%= f.submit "Save & Continue →", class: "btn btn-primary" %>
         </div>
       </div>
 
-      <%# Summary panel — 1/4 width %>
-      <div class="col-span-1">
-        <%= render "summary_panel" %>
+      <%# Hidden template for new rows — cloned by Stimulus %>
+      <template data-role-rows-target="template">
+        <%= f.fields_for :event_roles, EventRole.new,
+            child_index: "NEW_RECORD" do |role_f| %>
+          <%= render "role_row", f: role_f, role: role_f.object %>
+        <% end %>
+      </template>
+
+      <div class="flex items-center justify-between mt-4">
+        <%= link_to "Cancel", events_path, class: "btn btn-ghost" %>
+        <div class="flex items-center gap-2">
+          <%= f.submit "Save Draft",
+              formaction: save_draft_event_path(@event),
+              class: "btn btn-outline" %>
+          <%= link_to "Prev", step1_event_path(@event), class: "btn btn-outline" %>
+          <%= f.submit "Next", class: "btn btn-primary" %>
+        </div>
       </div>
     </div>
   <% end %>
