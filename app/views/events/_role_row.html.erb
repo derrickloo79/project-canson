@@ -32,6 +32,10 @@
         value: role.shift_end&.strftime("%H:%M"),
         class: field_class(role, :shift_end, "input input-bordered input-sm"),
         data: { shift_end: true, action: "change->role-rows#rowChanged" } %>
+    <label class="flex items-center gap-1.5 mt-1 cursor-pointer">
+      <%= f.check_box :shift_end_next_day, class: "checkbox checkbox-xs checkbox-warning" %>
+      <span class="text-warning text-xs">+1</span>
+    </label>
   </td>
   <td class="p-1">
     <div class="flex items-center gap-1">

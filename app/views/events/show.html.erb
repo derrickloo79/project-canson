@@ -63,10 +63,20 @@
         <dd><%= @event.event_start_time&.strftime("%H:%M") %></dd>
 
         <dt class="text-base-content/60">Event End</dt>
-        <dd><%= @event.event_end_time&.strftime("%H:%M") %></dd>
+        <dd>
+          <%= @event.event_end_time&.strftime("%H:%M") %>
+          <% if @event.end_time_next_day? %>
+            <span class="badge badge-warning badge-xs ml-1">+1</span>
+          <% end %>
+        </dd>
 
         <dt class="text-base-content/60">Teardown</dt>
-        <dd><%= @event.teardown_time&.strftime("%H:%M") || "—" %></dd>
+        <dd>
+          <%= @event.teardown_time&.strftime("%H:%M") || "—" %>
+          <% if @event.teardown_next_day? %>
+            <span class="badge badge-warning badge-xs ml-1">+1</span>
+          <% end %>
+        </dd>
       </dl>
 
       <% if @event.description.present? %>

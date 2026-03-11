@@ -21,12 +21,15 @@
           method: :patch do |f| %>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+          <%# Row 1: Event Name (full width) %>
           <div class="form-control sm:col-span-2">
             <%= f.label :event_name, "Event Name", class: "label" %>
             <%= f.text_field :event_name, class: field_class(@event, :event_name, "input input-bordered w-full"),
                 placeholder: "e.g. Smith-Johnson Wedding Dinner" %>
           </div>
 
+          <%# Row 2: Event Type | Event Date + Multi-day %>
           <div class="form-control">
             <%= f.label :event_type, "Event Type", class: "label" %>
             <%= f.select :event_type,
@@ -58,7 +61,8 @@
             </div>
           </div>
 
-          <div class="form-control sm:col-span-2">
+          <%# Row 3: Venue | Internal Reference No. %>
+          <div class="form-control">
             <%= f.label :venue, "Venue", class: "label" %>
             <%= f.text_field :venue, class: field_class(@event, :venue, "input input-bordered w-full"),
                 placeholder: "e.g. Grand Ballroom, Level 3" %>
@@ -70,6 +74,7 @@
                 placeholder: "e.g. EVT-2026-001" %>
           </div>
 
+          <%# Row 4: Setup Time | Event Start Time %>
           <div class="form-control">
             <%= f.label :setup_time, "Setup Time", class: "label" %>
             <%= f.time_field :setup_time,
@@ -84,11 +89,16 @@
                 class: field_class(@event, :event_start_time, "input input-bordered w-full") %>
           </div>
 
+          <%# Row 5: Event End Time | Teardown Time (each with next-day checkbox) %>
           <div class="form-control">
             <%= f.label :event_end_time, "Event End Time", class: "label" %>
             <%= f.time_field :event_end_time,
                 value: @event.event_end_time&.strftime("%H:%M"),
                 class: field_class(@event, :event_end_time, "input input-bordered w-full") %>
+            <label class="label cursor-pointer justify-start gap-3 mt-1">
+              <%= f.check_box :end_time_next_day, class: "checkbox checkbox-sm checkbox-warning" %>
+              <span class="label-text text-warning text-xs">Ends next day (+1)</span>
+            </label>
           </div>
 
           <div class="form-control">
@@ -96,8 +106,13 @@
             <%= f.time_field :teardown_time,
                 value: @event.teardown_time&.strftime("%H:%M"),
                 class: "input input-bordered w-full" %>
+            <label class="label cursor-pointer justify-start gap-3 mt-1">
+              <%= f.check_box :teardown_next_day, class: "checkbox checkbox-sm checkbox-warning" %>
+              <span class="label-text text-warning text-xs">Ends next day (+1)</span>
+            </label>
           </div>
 
+          <%# Row 6: Description (full width) %>
           <div class="form-control sm:col-span-2">
             <%= f.label :description, "Description / Internal Notes", class: "label" %>
             <%= f.text_area :description, rows: 3,

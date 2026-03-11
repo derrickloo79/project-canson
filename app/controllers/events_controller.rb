@@ -104,7 +104,8 @@ class EventsController < ApplicationController
     params.require(:event).permit(
       :event_name, :event_type, :event_date, :event_end_date,
       :multi_day, :venue, :reference_number, :setup_time,
-      :event_start_time, :event_end_time, :teardown_time, :description
+      :event_start_time, :event_end_time, :end_time_next_day,
+      :teardown_time, :teardown_next_day, :description
     )
   end
 
@@ -112,7 +113,7 @@ class EventsController < ApplicationController
     params.require(:event).permit(
       event_roles_attributes: [
         :id, :role_name, :vacancies, :shift_start,
-        :shift_end, :rate, :requirements, :position, :_destroy
+        :shift_end, :shift_end_next_day, :rate, :requirements, :position, :_destroy
       ]
     )
   end
@@ -121,10 +122,11 @@ class EventsController < ApplicationController
     params.fetch(:event, {}).permit(
       :event_name, :event_type, :event_date, :event_end_date,
       :multi_day, :venue, :reference_number, :setup_time,
-      :event_start_time, :event_end_time, :teardown_time, :description,
+      :event_start_time, :event_end_time, :end_time_next_day,
+      :teardown_time, :teardown_next_day, :description,
       event_roles_attributes: [
         :id, :role_name, :vacancies, :shift_start,
-        :shift_end, :rate, :requirements, :position, :_destroy
+        :shift_end, :shift_end_next_day, :rate, :requirements, :position, :_destroy
       ]
     )
   end

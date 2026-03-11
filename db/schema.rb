@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_09_100456) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_11_083345) do
   create_table "event_roles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "event_id", null: false
@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_09_100456) do
     t.text "requirements"
     t.string "role_name"
     t.time "shift_end"
+    t.boolean "shift_end_next_day", default: false, null: false
     t.time "shift_start"
     t.datetime "updated_at", null: false
     t.integer "vacancies"
@@ -28,6 +29,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_09_100456) do
   create_table "events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
+    t.boolean "end_time_next_day", default: false, null: false
     t.date "event_date"
     t.date "event_end_date"
     t.time "event_end_time"
@@ -38,6 +40,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_09_100456) do
     t.string "reference_number"
     t.time "setup_time"
     t.integer "status", default: 0, null: false
+    t.boolean "teardown_next_day", default: false, null: false
     t.time "teardown_time"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
