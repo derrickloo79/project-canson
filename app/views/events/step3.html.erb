@@ -125,7 +125,7 @@
 
   <div class="flex items-center justify-between">
     <%= link_to "Cancel", events_path, class: "btn btn-ghost" %>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-1">
       <%= button_to "Save Draft", save_draft_event_path(@event),
           method: :patch, class: "btn btn-outline" %>
       <%= link_to "Prev", step2_event_path(@event), class: "btn btn-outline" %>
