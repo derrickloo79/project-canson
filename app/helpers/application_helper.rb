@@ -8,11 +8,11 @@ module ApplicationHelper
 
     modifier = if base_class.include?("select")
                  "select-error"
-               elsif base_class.include?("textarea")
+    elsif base_class.include?("textarea")
                  "textarea-error"
-               else
+    else
                  "input-error"
-               end
+    end
     "#{base_class} #{modifier}"
   end
 end
