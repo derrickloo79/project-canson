@@ -10,6 +10,4 @@
   when "cancelled"        then "badge-error"
   else                         "badge-neutral"
   end %>
-<span class="badge <%= badge_class %>">
-  <%= event.status.humanize %>
-</span>
+<span class="badge <%= badge_class %> whitespace-nowrap shrink-0"><%= event.status.humanize %></span>
