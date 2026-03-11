@@ -28,14 +28,16 @@
         data: { shift_start: true, action: "change->role-rows#rowChanged" } %>
   </td>
   <td class="p-1">
-    <%= f.time_field :shift_end,
-        value: role.shift_end&.strftime("%H:%M"),
-        class: field_class(role, :shift_end, "input input-bordered input-sm"),
-        data: { shift_end: true, action: "change->role-rows#rowChanged" } %>
-    <label class="flex items-center gap-1.5 mt-1 cursor-pointer">
-      <%= f.check_box :shift_end_next_day, class: "checkbox checkbox-xs checkbox-warning" %>
-      <span class="text-warning text-xs">+1</span>
-    </label>
+    <div class="flex items-center gap-2">
+      <%= f.time_field :shift_end,
+          value: role.shift_end&.strftime("%H:%M"),
+          class: field_class(role, :shift_end, "input input-bordered input-sm"),
+          data: { shift_end: true, action: "change->role-rows#rowChanged" } %>
+      <label class="flex items-center gap-1 cursor-pointer shrink-0">
+        <%= f.check_box :shift_end_next_day, class: "checkbox checkbox-sm checkbox-warning" %>
+        <span class="text-warning text-xs">+1</span>
+      </label>
+    </div>
   </td>
   <td class="p-1">
     <div class="flex items-center gap-1">

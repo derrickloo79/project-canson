@@ -108,6 +108,9 @@
                   <td>
                     <%= role.shift_start&.strftime("%H:%M") %> –
                     <%= role.shift_end&.strftime("%H:%M") %>
+                    <% if role.shift_end_next_day? %>
+                      <span class="badge badge-warning badge-xs ml-1">+1</span>
+                    <% end %>
                   </td>
                   <td><%= role.rate ? number_with_precision(role.rate, precision: 2, delimiter: ",") : "—" %></td>
                   <td><%= role.requirements.presence || "—" %></td>
