@@ -34,7 +34,8 @@
           class: field_class(role, :shift_end, "input input-bordered input-sm"),
           data: { shift_end: true, action: "change->role-rows#rowChanged" } %>
       <label class="flex items-center gap-1 cursor-pointer shrink-0">
-        <%= f.check_box :shift_end_next_day, class: "checkbox checkbox-sm checkbox-warning" %>
+        <%= f.check_box :shift_end_next_day, class: "checkbox checkbox-sm checkbox-warning",
+            data: { next_day: true, action: "change->role-rows#rowChanged" } %>
         <span class="text-warning text-xs">+1</span>
       </label>
     </div>
@@ -46,7 +47,8 @@
           value: role.rate,
           step: "0.01", min: "0",
           class: "input input-bordered input-sm w-24",
-          placeholder: "0.00" %>
+          placeholder: "0.00",
+          data: { rate: true, action: "input->role-rows#rowChanged" } %>
     </div>
   </td>
   <td class="p-1">

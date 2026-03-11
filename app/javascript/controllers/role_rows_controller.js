@@ -60,17 +60,22 @@ export default class extends Controller {
     ).filter(row => !row.classList.contains("hidden"))
 
     let totalVacancies = 0
+    let totalCost      = 0
     let earliestStart  = null
     let latestEnd      = null
 
     visibleRows.forEach(row => {
-      const vacancyEl  = row.querySelector("[data-vacancies]")
-      const startEl    = row.querySelector("[data-shift-start]")
-      const endEl      = row.querySelector("[data-shift-end]")
+      const vacancyEl = row.querySelector("[data-vacancies]")
+      const startEl   = row.querySelector("[data-shift-start]")
+      const endEl     = row.querySelector("[data-shift-end]")
+      const rateEl    = row.querySelector("[data-rate]")
+      const nextDayEl = row.querySelector("[data-next-day]")
 
       const vacancies  = parseInt(vacancyEl?.value) || 0
       const shiftStart = startEl?.value || null
       const shiftEnd   = endEl?.value || null
+      const rate       = parseFloat(rateEl?.value) || 0
+      const nextDay    = nextDayEl?.checked || false
 
       totalVacancies += vacancies
 
@@ -80,13 +85,26 @@ export default class extends Controller {
       if (shiftEnd && (!latestEnd || shiftEnd > latestEnd)) {
         latestEnd = shiftEnd
       }
+
+      if (shiftStart && shiftEnd && rate > 0 && vacancies > 0) {
+        const [sh, sm] = shiftStart.split(":").map(Number)
+        const [eh, em] = shiftEnd.split(":").map(Number)
+        let shiftMins = (eh * 60 + em) - (sh * 60 + sm)
+        if (nextDay) shiftMins += 24 * 60
+        if (shiftMins > 0) totalCost += vacancies * rate * (shiftMins / 60)
+      }
     })
+
+    const costDisplay = totalCost > 0
+      ? "$" + totalCost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : "—"
 
     const summary = this.summaryTarget
     this.setText(summary, "[data-summary-roles]",     visibleRows.length)
     this.setText(summary, "[data-summary-vacancies]", totalVacancies)
     this.setText(summary, "[data-summary-start]",     this.formatTime(earliestStart))
     this.setText(summary, "[data-summary-end]",       this.formatTime(latestEnd))
+    this.setText(summary, "[data-summary-cost]",      costDisplay)
   }
 
   // Private helpers

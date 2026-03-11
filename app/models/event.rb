@@ -66,4 +66,15 @@ class Event < ApplicationRecord
   def latest_shift_end
     event_roles.maximum(:shift_end)
   end
+
+  def estimated_total_cost
+    event_roles.sum do |role|
+      next 0 unless role.rate && role.shift_start && role.shift_end && role.vacancies
+
+      seconds = role.shift_end - role.shift_start
+      seconds += 24 * 3600 if role.shift_end_next_day?
+      hours = seconds / 3600.0
+      role.vacancies * role.rate * hours
+    end
+  end
 end

@@ -26,11 +26,9 @@
       <dl class="grid grid-cols-4 gap-x-4 gap-y-2 text-sm mb-6">
         <dt class="text-base-content/60">Event Name</dt>
         <dd class="col-span-3 font-medium"><%= @event.event_name %></dd>
-        
 
         <dt class="text-base-content/60">Event Type</dt>
         <dd class="col-span-3"><%= @event.event_type&.humanize %></dd>
-        
 
         <dt class="text-base-content/60">Date</dt>
         <dd class="col-span-3">
@@ -41,7 +39,6 @@
             <span class="badge badge-outline badge-xs ml-1 uppercase">Multi-day</span>
           <% end %>
         </dd>
-        
 
         <dt class="text-base-content/60">Venue</dt>
         <dd class="col-span-3"><%= @event.venue %></dd>
@@ -58,7 +55,7 @@
         <dd class="col-span-3"><%= @event.event_start_time&.strftime("%H:%M") %></dd>
 
         <dt class="text-base-content/60">Event End</dt>
-        <dd class="col-span-3">
+        <dd class="col-span-3 flex items-center gap-1">
           <%= @event.event_end_time&.strftime("%H:%M") %>
           <% if @event.end_time_next_day? %>
             <span class="badge badge-warning badge-xs ml-1">+1</span>
@@ -66,7 +63,7 @@
         </dd>
 
         <dt class="text-base-content/60">Teardown Time</dt>
-        <dd class="col-span-3">
+        <dd class="col-span-3 flex items-center gap-1">
           <%= @event.teardown_time&.strftime("%H:%M") || "—" %>
           <% if @event.teardown_next_day? %>
             <span class="badge badge-warning badge-xs ml-1">+1</span>
@@ -84,7 +81,8 @@
         Roles & Requirements
         <span class="font-normal text-base-content/60 text-sm ml-2">
           (<%= @event.event_roles.size %> roles,
-           <%= @event.total_vacancies %> total vacancies)
+           <%= @event.total_vacancies %> total vacancies,
+           est. $<%= number_with_precision(@event.estimated_total_cost, precision: 2, delimiter: ",") %>)
         </span>
       </h3>
 
@@ -105,7 +103,7 @@
                 <tr>
                   <td class="font-medium"><%= role.role_name %></td>
                   <td><%= role.vacancies %></td>
-                  <td>
+                  <td class=" flex items-center gap-1">
                     <%= role.shift_start&.strftime("%H:%M") %> –
                     <%= role.shift_end&.strftime("%H:%M") %>
                     <% if role.shift_end_next_day? %>
