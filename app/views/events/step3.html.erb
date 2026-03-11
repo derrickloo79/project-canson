@@ -1,6 +1,6 @@
 <% content_for :title, "Step 3: Review & Submit — FlexiLabour" %>
 
-<div class="max-w-2xl mx-auto">
+<div class="max-w-3xl mx-auto">
   <%= render "step_indicator" %>
 
   <% if @event.errors.any? %>
@@ -25,54 +25,47 @@
       <h3 class="font-semibold text-base border-b border-base-300 pb-1 mb-3">Event Basics</h3>
       <dl class="grid grid-cols-4 gap-x-4 gap-y-2 text-sm mb-6">
         <dt class="text-base-content/60">Event Name</dt>
-        <dd class="col-span-2 font-medium"><%= @event.event_name %></dd>
-        <dd></dd>
+        <dd class="col-span-3 font-medium"><%= @event.event_name %></dd>
+        
 
         <dt class="text-base-content/60">Event Type</dt>
-        <dd class="col-span-2"><%= @event.event_type&.humanize %></dd>
-        <dd></dd>
+        <dd class="col-span-3"><%= @event.event_type&.humanize %></dd>
+        
 
         <dt class="text-base-content/60">Date</dt>
-        <dd class="col-span-2">
+        <dd class="col-span-3">
           <%= @event.event_date&.strftime("%a, %-d %b %Y") %>
           <% if @event.multi_day? && @event.event_end_date %>
             <span class="text-base-content/50"> – </span>
             <%= @event.event_end_date.strftime("%a, %-d %b %Y") %>
-            <span class="badge badge-outline badge-xs ml-1">Multi-day</span>
+            <span class="badge badge-outline badge-xs ml-1 uppercase">Multi-day</span>
           <% end %>
         </dd>
-        <dd></dd>
+        
 
         <dt class="text-base-content/60">Venue</dt>
-        <dd class="col-span-2"><%= @event.venue %></dd>
-        <dd></dd>
+        <dd class="col-span-3"><%= @event.venue %></dd>
 
         <% if @event.reference_number.present? %>
           <dt class="text-base-content/60">Reference No.</dt>
-          <dd class="col-span-2"><%= @event.reference_number %></dd>
-          <dd></dd>
+          <dd class="col-span-3"><%= @event.reference_number %></dd>
         <% end %>
 
         <dt class="text-base-content/60">Setup Time</dt>
-        <dd class="col-span-2"><%= @event.setup_time&.strftime("%H:%M") || "—" %></dd>
-        <dd></dd>
+        <dd class="col-span-3"><%= @event.setup_time&.strftime("%H:%M") || "—" %></dd>
 
         <dt class="text-base-content/60">Event Start</dt>
-        <dd class="col-span-2"><%= @event.event_start_time&.strftime("%H:%M") %></dd>
-        <dd></dd>
+        <dd class="col-span-3"><%= @event.event_start_time&.strftime("%H:%M") %></dd>
 
         <dt class="text-base-content/60">Event End</dt>
-        <dd class="col-span-2"><%= @event.event_end_time&.strftime("%H:%M") %></dd>
-        <dd></dd>
+        <dd class="col-span-3"><%= @event.event_end_time&.strftime("%H:%M") %></dd>
 
         <dt class="text-base-content/60">Teardown Time</dt>
-        <dd class="col-span-2"><%= @event.teardown_time&.strftime("%H:%M") || "—" %></dd>
-        <dd></dd>
+        <dd class="col-span-3"><%= @event.teardown_time&.strftime("%H:%M") || "—" %></dd>
 
         <% if @event.description.present? %>
           <dt class="text-base-content/60">Description</dt>
-          <dd class="col-span-2"><%= @event.description %></dd>
-          <dd></dd>
+          <dd class="col-span-3"><%= @event.description %></dd>
         <% end %>
       </dl>
 
