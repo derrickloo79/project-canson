@@ -23,7 +23,7 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="form-control sm:col-span-2">
             <%= f.label :event_name, "Event Name", class: "label" %>
-            <%= f.text_field :event_name, class: "input input-bordered w-full",
+            <%= f.text_field :event_name, class: field_class(@event, :event_name, "input input-bordered w-full"),
                 placeholder: "e.g. Smith-Johnson Wedding Dinner" %>
           </div>
 
@@ -32,14 +32,14 @@
             <%= f.select :event_type,
                 Event.event_types.keys.map { |k| [k.humanize, k] },
                 { include_blank: "Select type..." },
-                class: "select select-bordered w-full" %>
+                class: field_class(@event, :event_type, "select select-bordered w-full") %>
           </div>
 
           <div class="form-control" data-controller="checkbox-toggle">
             <label class="label" data-checkbox-toggle-target="label"
                    data-checkbox-toggle-unchecked-text="Event Date"
                    data-checkbox-toggle-checked-text="Start Date">Event Date</label>
-            <%= f.date_field :event_date, class: "input input-bordered w-full" %>
+            <%= f.date_field :event_date, class: field_class(@event, :event_date, "input input-bordered w-full") %>
 
             <label class="label cursor-pointer justify-start gap-3 mt-1">
               <%= f.check_box :multi_day,
@@ -54,13 +54,13 @@
             <div data-checkbox-toggle-target="content"
                  class="<%= @event.multi_day? ? '' : 'hidden' %>">
               <%= f.label :event_end_date, "End Date", class: "label mt-1" %>
-              <%= f.date_field :event_end_date, class: "input input-bordered w-full" %>
+              <%= f.date_field :event_end_date, class: field_class(@event, :event_end_date, "input input-bordered w-full") %>
             </div>
           </div>
 
           <div class="form-control sm:col-span-2">
             <%= f.label :venue, "Venue", class: "label" %>
-            <%= f.text_field :venue, class: "input input-bordered w-full",
+            <%= f.text_field :venue, class: field_class(@event, :venue, "input input-bordered w-full"),
                 placeholder: "e.g. Grand Ballroom, Level 3" %>
           </div>
 
@@ -81,14 +81,14 @@
             <%= f.label :event_start_time, "Event Start Time", class: "label" %>
             <%= f.time_field :event_start_time,
                 value: @event.event_start_time&.strftime("%H:%M"),
-                class: "input input-bordered w-full" %>
+                class: field_class(@event, :event_start_time, "input input-bordered w-full") %>
           </div>
 
           <div class="form-control">
             <%= f.label :event_end_time, "Event End Time", class: "label" %>
             <%= f.time_field :event_end_time,
                 value: @event.event_end_time&.strftime("%H:%M"),
-                class: "input input-bordered w-full" %>
+                class: field_class(@event, :event_end_time, "input input-bordered w-full") %>
           </div>
 
           <div class="form-control">
@@ -101,7 +101,7 @@
           <div class="form-control sm:col-span-2">
             <%= f.label :description, "Description / Internal Notes", class: "label" %>
             <%= f.text_area :description, rows: 3,
-                class: "textarea textarea-bordered w-full",
+                class: field_class(@event, :description, "textarea textarea-bordered w-full"),
                 placeholder: "Any briefing notes, special instructions, or internal remarks..." %>
           </div>
         </div>
