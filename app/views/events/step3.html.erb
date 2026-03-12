@@ -27,9 +27,6 @@
         <dt class="text-base-content/60">Event Name</dt>
         <dd class="col-span-3 font-medium"><%= @event.event_name %></dd>
 
-        <dt class="text-base-content/60">Event Type</dt>
-        <dd class="col-span-3"><%= @event.event_type&.humanize %></dd>
-
         <dt class="text-base-content/60">Date</dt>
         <dd class="col-span-3">
           <%= @event.event_date&.strftime("%a, %-d %b %Y") %>
@@ -43,37 +40,7 @@
         <dt class="text-base-content/60">Venue</dt>
         <dd class="col-span-3"><%= @event.venue %></dd>
 
-        <% if @event.reference_number.present? %>
-          <dt class="text-base-content/60">Reference No.</dt>
-          <dd class="col-span-3"><%= @event.reference_number %></dd>
-        <% end %>
-
-        <dt class="text-base-content/60">Setup Time</dt>
-        <dd class="col-span-3"><%= @event.setup_time&.strftime("%H:%M") || "—" %></dd>
-
-        <dt class="text-base-content/60">Event Start</dt>
-        <dd class="col-span-3"><%= @event.event_start_time&.strftime("%H:%M") %></dd>
-
-        <dt class="text-base-content/60">Event End</dt>
-        <dd class="col-span-3 flex items-center gap-1">
-          <%= @event.event_end_time&.strftime("%H:%M") %>
-          <% if @event.end_time_next_day? %>
-            <span class="badge badge-warning badge-sm ml-1">+1</span>
-          <% end %>
-        </dd>
-
-        <dt class="text-base-content/60">Teardown Time</dt>
-        <dd class="col-span-3 flex items-center gap-1">
-          <%= @event.teardown_time&.strftime("%H:%M") || "—" %>
-          <% if @event.teardown_next_day? %>
-            <span class="badge badge-warning badge-sm ml-1">+1</span>
-          <% end %>
-        </dd>
-
-        <% if @event.description.present? %>
-          <dt class="text-base-content/60">Description</dt>
-          <dd class="col-span-3"><%= @event.description %></dd>
-        <% end %>
+        <%= render "event_basics_rows", event: @event %>
       </dl>
 
       <%# Roles %>
