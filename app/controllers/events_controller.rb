@@ -111,12 +111,8 @@ class EventsController < ApplicationController
   private
 
   def set_event
-    # Approvers need access to events they manage; all others are scoped to their own events.
-    @event = if current_user.role_approving_manager?
-               Event.find(params[:id])
-             else
-               current_user.events.find(params[:id])
-             end
+    scope = current_user.role_approving_manager? ? Event.all : current_user.events
+    @event = scope.find(params[:id])
   end
 
   def authorize_ops_manager!
