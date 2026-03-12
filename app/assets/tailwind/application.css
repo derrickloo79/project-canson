@@ -3,3 +3,4 @@
 
 .input, .select { height: 2.25rem; }
 .container { max-width: none; }
+.badge { border-radius: 99px; }

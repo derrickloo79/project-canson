@@ -66,7 +66,7 @@
         <dd class="flex items-center gap-1">
           <%= @event.event_end_time&.strftime("%H:%M") %>
           <% if @event.end_time_next_day? %>
-            <span class="badge badge-warning badge-xs ml-1">+1</span>
+            <span class="badge badge-warning badge-sm ml-1">+1</span>
           <% end %>
         </dd>
 
@@ -74,7 +74,7 @@
         <dd class="flex items-center gap-1">
           <%= @event.teardown_time&.strftime("%H:%M") || "—" %>
           <% if @event.teardown_next_day? %>
-            <span class="badge badge-warning badge-xs ml-1">+1</span>
+            <span class="badge badge-warning badge-sm ml-1">+1</span>
           <% end %>
         </dd>
       </dl>
@@ -94,11 +94,12 @@
         Roles
         <span class="text-base font-normal text-base-content/60">
           (<%= @event.event_roles.size %> roles,
-           <%= @event.total_vacancies %> vacancies)
+           <%= @event.total_vacancies %> vacancies,
+           est. $<%= number_with_precision(@event.estimated_total_cost, precision: 2, delimiter: ",") %>)
         </span>
       </h2>
       <div class="overflow-x-auto mt-2">
-        <table class="table table-sm w-full">
+        <table class="table w-full">
           <thead>
             <tr>
               <th>Role</th>
@@ -116,7 +117,7 @@
                   <%= role.shift_start&.strftime("%H:%M") %> –
                   <%= role.shift_end&.strftime("%H:%M") %>
                   <% if role.shift_end_next_day? %>
-                    <span class="badge badge-warning badge-xs ml-1">+1</span>
+                    <span class="badge badge-warning badge-sm ml-1">+1</span>
                   <% end %>
                 </td>
                 <td><%= role.rate ? number_with_precision(role.rate, precision: 2, delimiter: ",") : "—" %></td>
