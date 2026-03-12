@@ -96,8 +96,8 @@
                 value: @event.event_end_time&.strftime("%H:%M"),
                 class: field_class(@event, :event_end_time, "input input-bordered w-full") %>
             <label class="label cursor-pointer justify-start gap-3 mt-1">
-              <%= f.check_box :end_time_next_day, class: "checkbox checkbox-sm checkbox-warning" %>
-              <span class="label-text text-warning text-xs">Ends next day (+1)</span>
+              <%= f.check_box :end_time_next_day, class: "checkbox checkbox-sm checkbox-neutral" %>
+              <span class="label-text text-xs">Ends next day (+1)</span>
             </label>
           </div>
 
@@ -107,8 +107,8 @@
                 value: @event.teardown_time&.strftime("%H:%M"),
                 class: "input input-bordered w-full" %>
             <label class="label cursor-pointer justify-start gap-3 mt-1">
-              <%= f.check_box :teardown_next_day, class: "checkbox checkbox-sm checkbox-warning" %>
-              <span class="label-text text-warning text-xs">Ends next day (+1)</span>
+              <%= f.check_box :teardown_next_day, class: "checkbox checkbox-sm checkbox-neutral" %>
+              <span class="label-text text-xs">Ends next day (+1)</span>
             </label>
           </div>
 
