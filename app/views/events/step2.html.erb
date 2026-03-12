@@ -17,7 +17,8 @@
       method: :patch do |f| %>
 
     <div data-controller="role-rows"
-         data-role-rows-index-value="<%= @event.event_roles.size %>">
+         data-role-rows-index-value="<%= @event.event_roles.size %>"
+         data-role-rows-days-value="<%= @event.event_days %>">
 
       <%# Summary bar — above the table %>
       <%= render "summary_panel" %>

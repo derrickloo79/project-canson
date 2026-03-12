@@ -11,7 +11,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["rowContainer", "template", "summary"]
-  static values  = { index: Number }
+  static values  = { index: Number, days: { type: Number, default: 1 } }
 
   connect() {
     this.updateSummary()
@@ -91,7 +91,7 @@ export default class extends Controller {
         const [eh, em] = shiftEnd.split(":").map(Number)
         let shiftMins = (eh * 60 + em) - (sh * 60 + sm)
         if (nextDay) shiftMins += 24 * 60
-        if (shiftMins > 0) totalCost += vacancies * rate * (shiftMins / 60)
+        if (shiftMins > 0) totalCost += vacancies * rate * (shiftMins / 60) * this.daysValue
       }
     })
 
