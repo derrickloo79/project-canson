@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_11_083345) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_081753) do
   create_table "event_roles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "event_id", null: false
@@ -38,6 +38,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_083345) do
     t.integer "event_type"
     t.boolean "multi_day", default: false, null: false
     t.string "reference_number"
+    t.text "rejection_reason"
     t.time "setup_time"
     t.integer "status", default: 0, null: false
     t.boolean "teardown_next_day", default: false, null: false
@@ -50,6 +51,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_083345) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.integer "approving_manager_id"
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -65,4 +67,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_083345) do
 
   add_foreign_key "event_roles", "events"
   add_foreign_key "events", "users"
+  add_foreign_key "users", "users", column: "approving_manager_id"
 end

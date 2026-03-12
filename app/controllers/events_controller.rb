@@ -2,10 +2,11 @@ class EventsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_event, only: %i[show step1 step2 step3
                                      update_step1 update_step2 update_step3
-                                     save_draft destroy]
+                                     save_draft destroy approve reject]
   before_action :authorize_ops_manager!, only: %i[new create step1 step2 step3
                                                    update_step1 update_step2 update_step3
                                                    save_draft destroy]
+  before_action :authorize_approver!, only: %i[approve reject]
 
   # GET /events
   def index
@@ -81,21 +82,52 @@ class EventsController < ApplicationController
   # PATCH /events/:id/update_step3
   def update_step3
     @event.wizard_step = 3
-    if @event.update(status: :pending_approval)
-      redirect_to @event, notice: "Event submitted for approval."
+    new_status = current_user.self_approver? ? :approved : :pending_approval
+    if @event.update(status: new_status)
+      notice = current_user.self_approver? ? "Event auto-approved." : "Event submitted for approval."
+      redirect_to @event, notice: notice
     else
       render :step3, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH /events/:id/approve
+  def approve
+    @event.update!(status: :approved, rejection_reason: nil)
+    redirect_to approvals_path, notice: "\"#{@event.event_name}\" has been approved."
+  end
+
+  # PATCH /events/:id/reject
+  def reject
+    reason = params[:rejection_reason].to_s.strip
+    if reason.blank?
+      redirect_to approvals_path, alert: "Please provide a rejection reason."
+    else
+      @event.update!(status: :rejected, rejection_reason: reason)
+      redirect_to approvals_path, notice: "\"#{@event.event_name}\" has been rejected."
     end
   end
 
   private
 
   def set_event
-    @event = current_user.events.find(params[:id])
+    # Approvers need access to events they manage; all others are scoped to their own events.
+    @event = if current_user.role_approving_manager?
+               Event.find(params[:id])
+             else
+               current_user.events.find(params[:id])
+             end
   end
 
   def authorize_ops_manager!
     unless current_user.role_ops_manager?
+      redirect_to root_path, alert: "You are not authorised to perform this action."
+    end
+  end
+
+  def authorize_approver!
+    unless current_user.role_approving_manager? &&
+           current_user.managed_users.include?(@event.user)
       redirect_to root_path, alert: "You are not authorised to perform this action."
     end
   end

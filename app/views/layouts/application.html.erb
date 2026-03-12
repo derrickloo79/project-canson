@@ -25,6 +25,15 @@
         <%= link_to "FlexiLabour", root_path, class: "text-base font-bold tracking-tight" %>
         <% if user_signed_in? %>
           <%= link_to "Events", events_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
+          <% if current_user.role_approving_manager? %>
+            <div class="flex items-center gap-1.5">
+              <%= link_to "Approvals", approvals_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
+              <% pending_count = current_user.managed_users.sum { |u| u.events.status_pending_approval.count } %>
+              <% if pending_count > 0 %>
+                <span class="badge badge-warning badge-xs"><%= pending_count %></span>
+              <% end %>
+            </div>
+          <% end %>
         <% end %>
       </div>
       <div class="flex items-center gap-4 right-section">

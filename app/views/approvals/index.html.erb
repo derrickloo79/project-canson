@@ -1,0 +1,102 @@
+<% content_for :title, "Pending Approvals — FlexiLabour" %>
+
+<div class="flex items-center gap-3 mb-6">
+  <h1 class="text-2xl font-bold">Pending Approvals</h1>
+  <% if @events.any? %>
+    <span class="badge badge-warning badge-lg"><%= @events.size %></span>
+  <% end %>
+</div>
+
+<% if @events.empty? %>
+  <div class="text-center py-16 text-base-content/50">
+    <p class="text-lg">No events pending approval.</p>
+    <p class="mt-1">All events have been reviewed.</p>
+  </div>
+<% else %>
+  <div class="overflow-x-auto">
+    <table class="table table-zebra w-full">
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Ops Manager</th>
+          <th>Type</th>
+          <th>Dates</th>
+          <th>Venue</th>
+          <th>Roles</th>
+          <th>Submitted</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @events.each do |event| %>
+          <tr>
+            <td class="font-medium">
+              <%= link_to event.event_name, event_path(event), class: "link link-hover" %>
+            </td>
+            <td><%= event.user.name %></td>
+            <td><%= event.event_type&.humanize %></td>
+            <td>
+              <%= event.event_date&.strftime("%d %b %Y") %>
+              <% if event.multi_day? && event.event_end_date %>
+                <span class="text-base-content/50"> – </span>
+                <%= event.event_end_date.strftime("%d %b %Y") %>
+              <% end %>
+            </td>
+            <td><%= event.venue %></td>
+            <td class="text-center"><%= event.event_roles.size %></td>
+            <td class="text-sm text-base-content/60"><%= event.updated_at.strftime("%d %b %Y") %></td>
+            <td>
+              <div class="flex items-center gap-2">
+                <%# Approve button %>
+                <%= button_to approve_event_path(event), method: :patch,
+                    class: "btn btn-success btn-sm",
+                    data: { turbo_confirm: "Approve \"#{event.event_name}\"?" } do %>
+                  Approve
+                <% end %>
+
+                <%# Reject button — opens modal %>
+                <button type="button"
+                        class="btn btn-error btn-sm btn-outline"
+                        onclick="document.getElementById('reject-modal-<%= event.id %>').showModal()">
+                  Reject
+                </button>
+              </div>
+
+              <%# Reject modal with reason textarea %>
+              <dialog id="reject-modal-<%= event.id %>" class="modal">
+                <div class="modal-box">
+                  <h3 class="font-bold text-lg">Reject event?</h3>
+                  <p class="text-sm text-base-content/60 mt-1 mb-4">
+                    "<%= event.event_name %>" will be sent back to <%= event.user.name %> for revision.
+                  </p>
+                  <%= form_with url: reject_event_path(event), method: :patch do %>
+                    <div class="form-control mb-4">
+                      <label class="label">
+                        <span class="label-text font-medium">Reason for rejection <span class="text-error">*</span></span>
+                      </label>
+                      <textarea name="rejection_reason"
+                                class="textarea textarea-bordered w-full"
+                                rows="3"
+                                placeholder="Explain what needs to be changed..."
+                                required></textarea>
+                    </div>
+                    <div class="modal-action">
+                      <button type="button" class="btn btn-ghost"
+                              onclick="document.getElementById('reject-modal-<%= event.id %>').close()">
+                        Cancel
+                      </button>
+                      <button type="submit" class="btn btn-error">Reject & Send Back</button>
+                    </div>
+                  <% end %>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                  <button>close</button>
+                </form>
+              </dialog>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
