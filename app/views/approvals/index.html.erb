@@ -46,19 +46,25 @@
             <td class="text-center"><%= event.event_roles.size %></td>
             <td class="text-sm text-base-content/60"><%= event.updated_at.strftime("%d %b %Y") %></td>
             <td>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1">
                 <%# Approve button %>
                 <%= button_to approve_event_path(event), method: :patch,
-                    class: "btn btn-success btn-sm",
+                    class: "btn btn-success btn-square btn-sm",
+                    title: "Approve",
                     data: { turbo_confirm: "Approve \"#{event.event_name}\"?" } do %>
-                  Approve
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
                 <% end %>
 
                 <%# Reject button — opens modal %>
                 <button type="button"
-                        class="btn btn-error btn-sm btn-outline"
+                        class="btn btn-error btn-square btn-sm btn-outline"
+                        title="Reject"
                         onclick="document.getElementById('reject-modal-<%= event.id %>').showModal()">
-                  Reject
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
 

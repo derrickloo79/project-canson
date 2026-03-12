@@ -32,7 +32,11 @@
     </div>
     <div class="flex items-center gap-3">
       <%= render "event_status_badge", event: @event %>
-      <%= link_to "Back to Events", events_path, class: "btn btn-ghost btn-sm" %>
+      <% if current_user.role_approving_manager? %>
+        <%= link_to "Back to Approvals", approvals_path, class: "btn btn-ghost btn-sm" %>
+      <% else %>
+        <%= link_to "Back to Events", events_path, class: "btn btn-ghost btn-sm" %>
+      <% end %>
     </div>
   </div>
 
