@@ -15,6 +15,7 @@ class User < ApplicationRecord
   has_many :managed_users, class_name: "User", foreign_key: :approving_manager_id, dependent: :nullify
 
   has_many :events, foreign_key: :user_id, dependent: :destroy
+  has_one :staff_member
 
   validates :name, presence: true
 

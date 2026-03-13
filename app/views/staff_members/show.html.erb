@@ -1,0 +1,162 @@
+<% content_for :title, "#{@staff_member.name} — FlexiLabour" %>
+
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to staff_members_path, class: "btn btn-ghost btn-sm btn-square" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    <% end %>
+    <div class="flex-1 flex items-center gap-3">
+      <h1 class="text-2xl font-bold"><%= @staff_member.name %></h1>
+      <% if @staff_member.blacklisted? %>
+        <span class="badge badge-error">Blacklisted</span>
+      <% else %>
+        <span class="badge badge-success">Active</span>
+      <% end %>
+    </div>
+    <% if can_edit_staff? %>
+      <div class="flex items-center gap-2">
+        <%= link_to edit_staff_member_path(@staff_member), class: "btn btn-outline btn-sm" do %>
+          Edit
+        <% end %>
+        <%= button_to "Remove", staff_member_path(@staff_member), method: :delete,
+            class: "btn btn-outline btn-error btn-sm",
+            data: { turbo_confirm: "Remove \"#{@staff_member.name}\" from the directory? This cannot be undone." } %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Temp password banner — shown once immediately after Create Login %>
+  <% if flash[:temp_password].present? %>
+    <div role="alert" class="alert alert-warning mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+      </svg>
+      <div>
+        <p class="font-semibold">Login created — save this password now!</p>
+        <p class="text-sm mt-1">
+          Temporary password:
+          <code class="font-mono font-bold tracking-wider"><%= flash[:temp_password] %></code>
+        </p>
+        <p class="text-xs mt-1 opacity-70">This password will not be shown again. Share it with the staff member.</p>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Blacklist notice %>
+  <% if @staff_member.blacklisted? %>
+    <div role="alert" class="alert alert-error mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+      </svg>
+      <div class="flex-1">
+        <p class="font-semibold">This staff member is blacklisted.</p>
+        <% if @staff_member.blacklist_reason.present? %>
+          <p class="text-sm mt-0.5"><%= @staff_member.blacklist_reason %></p>
+        <% end %>
+        <p class="text-xs mt-1 opacity-70">
+          Blacklisted <%= @staff_member.blacklisted_at&.strftime("%-d %b %Y") %>
+          <% if @staff_member.blacklisted_by.present? %>
+            by <%= @staff_member.blacklisted_by.name %>
+          <% end %>
+        </p>
+      </div>
+      <% if can_blacklist? %>
+        <%= button_to "Reinstate", unblacklist_staff_member_path(@staff_member), method: :patch,
+            class: "btn btn-sm btn-outline",
+            data: { turbo_confirm: "Reinstate \"#{@staff_member.name}\"?" } %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# Details card %>
+  <div class="card bg-base-100 border border-base-200 shadow-sm mb-6">
+    <div class="card-body">
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+        <div>
+          <dt class="text-base-content/50 text-xs uppercase tracking-wide">Email</dt>
+          <dd class="mt-1 font-medium"><%= mail_to @staff_member.email, @staff_member.email %></dd>
+        </div>
+        <div>
+          <dt class="text-base-content/50 text-xs uppercase tracking-wide">Mobile</dt>
+          <dd class="mt-1 font-medium"><%= @staff_member.mobile.presence || "—" %></dd>
+        </div>
+        <div>
+          <dt class="text-base-content/50 text-xs uppercase tracking-wide">Gender</dt>
+          <dd class="mt-1 font-medium">
+            <%= @staff_member.gender.present? ? @staff_member.gender.humanize.gsub("_", " ").capitalize : "—" %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-base-content/50 text-xs uppercase tracking-wide">Member since</dt>
+          <dd class="mt-1 font-medium"><%= @staff_member.created_at.strftime("%-d %b %Y") %></dd>
+        </div>
+        <div class="sm:col-span-2">
+          <dt class="text-base-content/50 text-xs uppercase tracking-wide mb-2">Roles</dt>
+          <dd>
+            <% if @staff_member.roles.any? %>
+              <div class="flex flex-wrap gap-2">
+                <% @staff_member.roles.ordered.each do |role| %>
+                  <span class="badge badge-neutral"><%= role.name %></span>
+                <% end %>
+              </div>
+            <% else %>
+              <span class="text-base-content/40">No roles assigned</span>
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <%# Portal login card %>
+  <% if can_edit_staff? %>
+    <div class="card bg-base-100 border border-base-200 shadow-sm mb-6">
+      <div class="card-body">
+        <h2 class="card-title text-base">Portal Login</h2>
+        <% if @staff_member.has_login? %>
+          <p class="text-sm text-base-content/60">
+            Portal account active
+            <span class="font-medium text-base-content">(<%= @staff_member.user.email %>)</span>.
+            This staff member can log in to view and respond to invitations.
+          </p>
+        <% else %>
+          <p class="text-sm text-base-content/60 mb-4">
+            No portal login yet. Create one so this staff member can log in to view and respond to invitations.
+          </p>
+          <%= form_with url: create_login_staff_member_path(@staff_member), method: :post do |f| %>
+            <%= f.submit "Create Login",
+                class: "btn btn-primary btn-sm",
+                data: { turbo_confirm: "Create a portal login for #{@staff_member.name}? A temporary password will be generated." } %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Blacklist action (for approving managers / admins only) %>
+  <% if can_blacklist? && !@staff_member.blacklisted? %>
+    <div class="card bg-base-100 border border-error/30 shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title text-error text-base">Blacklist Staff Member</h2>
+        <p class="text-sm text-base-content/60 mb-4">
+          Blacklisting will prevent this staff member from being assigned to events.
+        </p>
+        <%= form_with url: blacklist_staff_member_path(@staff_member), method: :patch do |f| %>
+          <div class="form-control mb-4">
+            <%= f.label :blacklist_reason, "Reason", class: "label" %>
+            <%= f.text_area :blacklist_reason, rows: 3,
+                class: "textarea textarea-bordered textarea-error w-full",
+                placeholder: "Provide a reason for blacklisting this staff member…",
+                required: true %>
+          </div>
+          <%= f.submit "Blacklist", class: "btn btn-error btn-sm",
+              data: { turbo_confirm: "Blacklist \"#{@staff_member.name}\"? They will no longer be available for events." } %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

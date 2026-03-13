@@ -15,6 +15,9 @@ Rails.application.routes.draw do
       patch :approve
       patch :reject
     end
+    resources :event_roles, only: [] do
+      resources :event_invitations, only: :create
+    end
   end
 
   get "/approvals", to: "approvals#index", as: :approvals
@@ -22,6 +25,21 @@ Rails.application.routes.draw do
   resources :roles, except: :show do
     member do
       patch :toggle
+    end
+  end
+
+  resources :staff_members do
+    member do
+      patch :blacklist
+      patch :unblacklist
+      post  :create_login
+    end
+  end
+
+  resources :invitations, only: :index do
+    member do
+      patch :accept
+      patch :decline
     end
   end
 

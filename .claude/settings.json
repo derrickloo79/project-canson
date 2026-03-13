@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bin/rails db:seed)",
+      "Bash(bin/rails routes)",
+      "Bash(bin/rails generate migration AddUserIdToStaffMembers user_id:integer:index)",
+      "Bash(bin/rails generate migration CreateEventInvitations)",
+      "Bash(bin/rails db:migrate)"
+    ],
+    "additionalDirectories": [
+      "/Users/derrick.loo-admin/Documents/flexi_labour/app/views"
+    ]
+  }
+}

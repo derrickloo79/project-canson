@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_13_015911) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_13_053409) do
+  create_table "event_invitations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "event_role_id", null: false
+    t.datetime "responded_at"
+    t.integer "staff_member_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_role_id", "staff_member_id"], name: "index_event_invitations_on_event_role_id_and_staff_member_id", unique: true
+    t.index ["event_role_id"], name: "index_event_invitations_on_event_role_id"
+    t.index ["staff_member_id"], name: "index_event_invitations_on_staff_member_id"
+  end
+
   create_table "event_roles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "event_id", null: false
@@ -58,6 +70,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_015911) do
     t.index ["name"], name: "index_roles_on_name", unique: true
   end
 
+  create_table "staff_member_roles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "role_id", null: false
+    t.integer "staff_member_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["staff_member_id", "role_id"], name: "index_staff_member_roles_on_staff_member_id_and_role_id", unique: true
+  end
+
+  create_table "staff_members", force: :cascade do |t|
+    t.text "blacklist_reason"
+    t.boolean "blacklisted", default: false, null: false
+    t.datetime "blacklisted_at"
+    t.integer "blacklisted_by_id"
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.integer "gender"
+    t.string "mobile"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id"
+    t.index ["email"], name: "index_staff_members_on_email", unique: true
+    t.index ["user_id"], name: "index_staff_members_on_user_id", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.integer "approving_manager_id"
     t.datetime "created_at", null: false
@@ -73,7 +109,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_015911) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "event_invitations", "event_roles"
+  add_foreign_key "event_invitations", "staff_members"
   add_foreign_key "event_roles", "events"
   add_foreign_key "events", "users"
+  add_foreign_key "staff_member_roles", "roles"
+  add_foreign_key "staff_member_roles", "staff_members"
+  add_foreign_key "staff_members", "users"
+  add_foreign_key "staff_members", "users", column: "blacklisted_by_id"
   add_foreign_key "users", "users", column: "approving_manager_id"
 end

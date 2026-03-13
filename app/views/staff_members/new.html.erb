@@ -1,0 +1,18 @@
+<% content_for :title, "Add Staff Member — FlexiLabour" %>
+
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to staff_members_path, class: "btn btn-ghost btn-sm btn-square" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    <% end %>
+    <h1 class="text-2xl font-bold">Add Staff Member</h1>
+  </div>
+
+  <div class="card bg-base-100 border border-base-200 shadow-sm">
+    <div class="card-body">
+      <%= render "form", staff_member: @staff_member %>
+    </div>
+  </div>
+</div>

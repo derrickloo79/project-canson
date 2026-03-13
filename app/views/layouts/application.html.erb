@@ -24,16 +24,29 @@
       <div class="flex items-center gap-6 left-section">
         <%= link_to "FlexiLabour", root_path, class: "text-base font-bold tracking-tight" %>
         <% if user_signed_in? %>
-          <%= link_to "Events", events_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
-          <% if current_user.role_approving_manager? %>
+          <% if current_user.role_flexible_staff? %>
+            <%# Flexible staff: only see their own invitations %>
             <div class="flex items-center gap-1.5">
-              <%= link_to "Approvals", approvals_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
-              <% pending_count = current_user.managed_users.sum { |u| u.events.status_pending_approval.count } %>
+              <%= link_to "Invitations", invitations_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
+              <% pending_count = current_user.staff_member&.event_invitations&.status_pending&.count || 0 %>
               <% if pending_count > 0 %>
                 <span class="badge badge-warning badge-xs"><%= pending_count %></span>
               <% end %>
             </div>
-            <%= link_to "Roles", roles_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
+          <% else %>
+            <%# Ops managers, approving managers, admins %>
+            <%= link_to "Events", events_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
+            <%= link_to "Staff", staff_members_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
+            <% if current_user.role_approving_manager? || current_user.role_system_admin? %>
+              <div class="flex items-center gap-1.5">
+                <%= link_to "Approvals", approvals_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
+                <% pending_count = current_user.managed_users.sum { |u| u.events.status_pending_approval.count } %>
+                <% if pending_count > 0 %>
+                  <span class="badge badge-warning badge-xs"><%= pending_count %></span>
+                <% end %>
+              </div>
+              <%= link_to "Roles", roles_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
+            <% end %>
           <% end %>
         <% end %>
       </div>

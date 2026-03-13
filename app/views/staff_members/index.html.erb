@@ -1,0 +1,71 @@
+<% content_for :title, "Staff Directory — FlexiLabour" %>
+
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">Staff Directory</h1>
+  <% if current_user.role_ops_manager? || current_user.role_approving_manager? || current_user.role_system_admin? %>
+    <%= link_to "Add Staff Member", new_staff_member_path, class: "btn btn-primary btn-sm" %>
+  <% end %>
+</div>
+
+<% if @staff_members.empty? %>
+  <div class="text-center py-16 text-base-content/50">
+    <p class="text-lg">No staff members yet.</p>
+    <p class="mt-1">Add flexible staff members to build your directory.</p>
+  </div>
+<% else %>
+  <div class="card bg-base-100 border border-base-200 shadow-sm overflow-x-auto">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Mobile</th>
+          <th>Gender</th>
+          <th>Roles</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @staff_members.each do |member| %>
+          <tr class="<%= 'opacity-60' if member.blacklisted? %>">
+            <td>
+              <%= link_to member.name, staff_member_path(member), class: "font-medium hover:underline" %>
+            </td>
+            <td class="text-sm text-base-content/70"><%= member.email %></td>
+            <td class="text-sm text-base-content/70"><%= member.mobile.presence || "—" %></td>
+            <td class="text-sm text-base-content/70">
+              <%= member.gender.present? ? member.gender.humanize.gsub("_", " ").capitalize : "—" %>
+            </td>
+            <td>
+              <div class="flex flex-wrap gap-1">
+                <% if member.roles.any? %>
+                  <% member.roles.each do |role| %>
+                    <span class="badge badge-neutral badge-xs"><%= role.name %></span>
+                  <% end %>
+                <% else %>
+                  <span class="text-base-content/40 text-xs">—</span>
+                <% end %>
+              </div>
+            </td>
+            <td>
+              <% if member.blacklisted? %>
+                <span class="badge badge-error badge-sm">Blacklisted</span>
+              <% else %>
+                <span class="badge badge-success badge-sm">Active</span>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to staff_member_path(member), class: "btn btn-ghost btn-xs btn-square", title: "View" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

@@ -1,6 +1,7 @@
 class Event < ApplicationRecord
   belongs_to :user
   has_many :event_roles, -> { order(position: :asc) }, dependent: :destroy
+  has_many :event_invitations, through: :event_roles
   accepts_nested_attributes_for :event_roles,
                                 allow_destroy: true,
                                 reject_if: :all_blank

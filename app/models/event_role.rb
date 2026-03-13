@@ -1,5 +1,7 @@
 class EventRole < ApplicationRecord
   belongs_to :event
+  has_many :event_invitations, dependent: :destroy
+  has_many :invited_staff_members, through: :event_invitations, source: :staff_member
 
   validates :role_name, presence: true
   validates :vacancies, presence: true,

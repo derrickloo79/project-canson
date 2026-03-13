@@ -1,0 +1,45 @@
+<% content_for :title, "My Invitations — FlexiLabour" %>
+
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-2xl font-bold mb-6">My Invitations</h1>
+
+  <% if current_user.staff_member.nil? %>
+    <div role="alert" class="alert alert-info">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-5 w-5 shrink-0 stroke-current">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>Your staff profile has not been linked to this account yet. Please contact your ops manager.</span>
+    </div>
+
+  <% elsif @pending_invitations.empty? && @responded_invitations.empty? %>
+    <div class="text-center py-16 text-base-content/50">
+      <p class="text-lg">No invitations yet.</p>
+      <p class="mt-1">You'll see event invitations here when ops managers send them.</p>
+    </div>
+
+  <% else %>
+    <%# Pending invitations %>
+    <% if @pending_invitations.any? %>
+      <h2 class="text-lg font-semibold mb-3">
+        Awaiting your response
+        <span class="badge badge-warning badge-sm ml-1"><%= @pending_invitations.size %></span>
+      </h2>
+      <div class="space-y-4 mb-8">
+        <% @pending_invitations.each do |inv| %>
+          <%= render "invitations/invitation_card", invitation: inv, show_actions: true %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Responded invitations %>
+    <% if @responded_invitations.any? %>
+      <h2 class="text-lg font-semibold mb-3 text-base-content/60">Past responses</h2>
+      <div class="space-y-4">
+        <% @responded_invitations.each do |inv| %>
+          <%= render "invitations/invitation_card", invitation: inv, show_actions: false %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

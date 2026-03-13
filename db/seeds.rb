@@ -1,5 +1,13 @@
 # Seeds are idempotent — safe to run multiple times.
 
+# System Admin
+admin = User.find_or_create_by!(email: "admin@example.com") do |u|
+  u.name     = "System Admin"
+  u.password = "password123"
+  u.role     = :system_admin
+end
+puts "System Admin: #{admin.email} / password123"
+
 # Staff roles (position types)
 %w[Bartender Cleaner Manager Waiter].each do |name|
   Role.find_or_create_by!(name: name)
@@ -120,4 +128,52 @@ unless ops.events.where(event_name: "Grand Annual Gala 2026").exists?
 
   event.update_column(:wizard_step, 3)
   puts "Sample event created: #{event.event_name} (draft, #{event.event_roles.size} roles)"
+end
+
+# Sample staff members
+waiter_role    = Role.find_by(name: "Waiter")
+bartender_role = Role.find_by(name: "Bartender")
+cleaner_role   = Role.find_by(name: "Cleaner")
+
+[
+  { name: "Priya Nair",     email: "priya@example.com",   mobile: "+65 9111 1001", gender: :female,           roles: [waiter_role, bartender_role] },
+  { name: "Marcus Tan",     email: "marcus@example.com",  mobile: "+65 9111 1002", gender: :male,             roles: [waiter_role] },
+  { name: "Ling Mei",       email: "ling@example.com",    mobile: "+65 9111 1003", gender: :female,           roles: [cleaner_role] },
+  { name: "Sam Rajendran",  email: "sam@example.com",     mobile: "+65 9111 1004", gender: :prefer_not_to_say, roles: [waiter_role, cleaner_role] }
+].each do |attrs|
+  roles = attrs.delete(:roles).compact
+  member = StaffMember.find_or_create_by!(email: attrs[:email]) do |m|
+    m.name   = attrs[:name]
+    m.mobile = attrs[:mobile]
+    m.gender = attrs[:gender]
+  end
+  member.roles = roles
+  puts "Staff member: #{member.name}"
+end
+
+# Blacklist one member for testing
+blacklisted = StaffMember.find_by(email: "sam@example.com")
+if blacklisted && !blacklisted.blacklisted?
+  blacklisted.blacklist!(
+    by_user: User.find_by(role: User.roles[:approving_manager]),
+    reason:  "No-show at two confirmed events without notice."
+  )
+  puts "Blacklisted: #{blacklisted.name}"
+end
+
+# Create portal logins for two staff members (for testing invitations flow)
+[
+  { email: "priya@example.com", name: "Priya Nair" },
+  { email: "marcus@example.com", name: "Marcus Tan" }
+].each do |attrs|
+  member = StaffMember.find_by(email: attrs[:email])
+  next unless member
+  next if member.user_id.present?
+  user = User.find_or_create_by!(email: attrs[:email]) do |u|
+    u.name     = attrs[:name]
+    u.password = "password123"
+    u.role     = :flexible_staff
+  end
+  member.update!(user: user) unless member.user_id.present?
+  puts "Staff login: #{attrs[:email]} / password123"
 end

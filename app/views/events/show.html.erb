@@ -103,4 +103,15 @@
       </div>
     </div>
   </div>
+
+  <% if current_user.role_ops_manager? && (@event.status_approved? || @event.status_invitation_open?) %>
+    <div class="card bg-base-200 shadow-sm mt-4">
+      <div class="card-body">
+        <h2 class="card-title">Invite Staff</h2>
+        <% @event.event_roles.each do |role| %>
+          <%= render "events/invite_role_panel", role: role %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </div>
