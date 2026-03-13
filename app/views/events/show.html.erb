@@ -4,13 +4,33 @@
   invitation_phase = @event.status_approved? || @event.status_invitation_open? || @event.status_fully_staffed?
 %>
 
-<div class="max-w-3xl mx-auto">
+<div class="max-w-4xl mx-auto">
+
+  <div class="flex mb-6">
+    <% if current_user.role_approving_manager? %>
+      <%= link_to approvals_path, class: "btn btn-ghost btn-sm btn-square" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      <% end %>
+    <% else %>
+        <%= link_to events_path, class: "btn btn-ghost btn-sm btn-square" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      <% end %>
+    <% end %>
+  </div>
+
   <%= render "rejection_notice", event: @event %>
 
   <%# Header %>
   <div class="flex items-start justify-between mb-6">
-    <div>
-      <h1 class="text-2xl font-bold"><%= @event.event_name %></h1>
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold"><%= @event.event_name %></h1>
+        <%= render "event_status_badge", event: @event %>
+      </div>
       <div class="flex items-center flex-wrap gap-x-3 gap-y-1 mt-1 text-base-content/60 text-sm">
         <span class="flex items-center gap-1.5 whitespace-nowrap">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -44,14 +64,6 @@
           </span>
         <% end %>
       </div>
-    </div>
-    <div class="flex items-center gap-3">
-      <%= render "event_status_badge", event: @event %>
-      <% if current_user.role_approving_manager? %>
-        <%= link_to "Back to Approvals", approvals_path, class: "btn btn-ghost btn-sm" %>
-      <% else %>
-        <%= link_to "Back to Events", events_path, class: "btn btn-ghost btn-sm" %>
-      <% end %>
     </div>
   </div>
 
@@ -89,58 +101,106 @@
       <%# Tab 2 — Roles & Vacancies %>
       <input type="radio" name="event_tabs" role="tab" class="tab" aria-label="Roles &amp; Vacancies" />
       <div role="tabpanel" class="tab-content pt-6">
-        <div class="card bg-base-200 shadow-sm">
-          <div class="card-body">
-            <h2 class="card-title">
-              Roles & Vacancies
-              <span class="text-base font-normal text-base-content/60">
-                (<%= @event.event_roles.size %> roles, <%= @event.total_vacancies %> total vacancies)
-              </span>
-            </h2>
-            <div class="overflow-x-auto mt-2">
-              <table class="table w-full">
-                <thead>
-                  <tr>
-                    <th>Role</th>
-                    <th>Shift</th>
-                    <th>Confirmed</th>
-                    <th>Vacancies</th>
-                    <th>Rate ($/hr)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% @event.event_roles.each do |role| %>
-                    <%
-                      cnt = role.confirmed_count
-                      vac = role.vacancies
-                      fill_badge = cnt >= vac ? "badge-success" : (cnt > 0 ? "badge-warning" : "badge-ghost")
-                    %>
-                    <tr>
-                      <td class="font-medium"><%= role.role_name %></td>
-                      <td class="whitespace-nowrap">
-                        <%= role.shift_start&.strftime("%H:%M") %> –
-                        <%= role.shift_end&.strftime("%H:%M") %>
-                        <% if role.shift_end_next_day? %>
-                          <span class="badge badge-warning badge-xs ml-1">+1</span>
-                        <% end %>
-                      </td>
-                      <td>
-                        <span class="badge <%= fill_badge %> badge-sm"><%= cnt %> / <%= vac %></span>
-                      </td>
-                      <td><%= vac %></td>
-                      <td><%= role.rate ? number_with_precision(role.rate, precision: 2, delimiter: ",") : "—" %></td>
-                    </tr>
+        <div class="space-y-4">
+          <% @event.event_roles.each do |role| %>
+            <%
+              cnt        = role.confirmed_count
+              vac        = role.vacancies
+              fill_badge = cnt >= vac ? "badge-success" : (cnt > 0 ? "badge-warning" : "badge-neutral")
+              confirmed_invitations = role.event_invitations.select(&:status_accepted?)
+            %>
+            <div class="card bg-base-200 border border-base-200 shadow-sm">
+              <div class="card-body gap-3">
+                <div class="flex">  
+                  <div class="flex flex-col gap-2 flex-1">
+                    <%# Row 1: role name + shift + rate + fill badge %>
+                    <div class="flex items-center gap-3 flex-wrap">
+                    <h3 class="font-bold text-base"><%= role.role_name %></h3>
+                    <span class="flex items-center gap-1.5 text-sm text-base-content/60">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <%= role.shift_start&.strftime("%H:%M") %> – <%= role.shift_end&.strftime("%H:%M") %>
+                      <% if role.shift_end_next_day? %>
+                        <span class="badge badge-warning badge-xs">+1</span>
+                      <% end %>
+                    </span>
+                    <span class="flex items-center gap-1.5 text-sm text-base-content/60">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <%= role.rate ? "$#{number_with_precision(role.rate, precision: 2)}/hr" : "—" %>
+                    </span>
+                    <span class="badge <%= fill_badge %> badge-sm whitespace-nowrap">
+                      <%= cnt %> / <%= vac %> Filled
+                    </span>
+                    </div>
+
+                    <%# Row 2: source breakdown + Invite button, right-aligned %>
+                    <div class="flex text-sm gap-6">
+                      <div class="flex gap-2 items-center">
+                        <p class="text-base-content/50 text-xs uppercase tracking-wide">In-House</p>
+                        <p class="font-semibold"><%= cnt %></p>
+                      </div>
+                      <div class="flex gap-2 items-center">
+                        <p class="text-base-content/50 text-xs uppercase tracking-wide">Agency</p>
+                        <p class="font-semibold">0</p>
+                      </div>
+                      <div class="flex gap-2 items-center">
+                        <p class="text-base-content/50 text-xs uppercase tracking-wide">External Referral</p>
+                        <p class="font-semibold">0</p>
+                      </div>
+                    </div>
+                  </div>
+                  <% if current_user.role_ops_manager? %>
+                    <label for="tab-staff" class="btn btn-outline btn-sm cursor-pointer">Invite</label>
                   <% end %>
-                </tbody>
-              </table>
+                </div>
+                <%# Confirmed staff table %>
+                <% if confirmed_invitations.any? %>
+                  <div class="overflow-x-auto mt-1">
+                    <table class="table table-sm w-full">
+                      <thead>
+                        <tr>
+                          <th>Full Name</th>
+                          <th>Email</th>
+                          <th>Mobile</th>
+                          <th>Gender</th>
+                          <th>Source</th>
+                          <th>Accepted</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% confirmed_invitations.each do |inv| %>
+                          <tr>
+                            <td class="font-medium"><%= inv.staff_member.name %></td>
+                            <td class="text-base-content/60"><%= inv.staff_member.email %></td>
+                            <td class="text-base-content/60"><%= inv.staff_member.mobile.presence || "—" %></td>
+                            <td><%= inv.staff_member.gender&.humanize || "—" %></td>
+                            <td><span class="badge badge-ghost badge-sm">In-House</span></td>
+                            <td class="text-base-content/60 whitespace-nowrap">
+                              <%= inv.responded_at&.strftime("%-d %b %Y %H:%M") || "—" %>
+                            </td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                <% else %>
+                  <p class="text-center text-base-content/40 text-sm py-2">No Data</p>
+                <% end %>
+
+              </div>
             </div>
-          </div>
+          <% end %>
         </div>
       </div>
 
       <%# Tab 3 — Staff (In-House) — ops managers only %>
       <% if current_user.role_ops_manager? %>
-        <input type="radio" name="event_tabs" role="tab" class="tab" aria-label="Staff" />
+        <input type="radio" id="tab-staff" name="event_tabs" role="tab" class="tab" aria-label="In-House Staff" />
         <div role="tabpanel" class="tab-content pt-6">
           <div class="card bg-base-200 shadow-sm">
             <div class="card-body">
