@@ -9,3 +9,7 @@
 .badge-error { @apply bg-red-50 text-red-700 inset-ring inset-ring-red-600/10; }
 .badge-info { @apply bg-blue-50 text-blue-700 inset-ring inset-ring-blue-700/10; }
 .badge-success { @apply bg-green-50 text-green-700 inset-ring inset-ring-green-600/20; }
+
+.alert { box-shadow: none; }
+.alert-info { @apply bg-blue-50 border-blue-50 text-blue-600; }
+.alert-error { @apply bg-red-50 border-red-50 text-red-600; }
