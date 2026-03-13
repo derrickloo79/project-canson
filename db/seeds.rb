@@ -136,10 +136,10 @@ bartender_role = Role.find_by(name: "Bartender")
 cleaner_role   = Role.find_by(name: "Cleaner")
 
 [
-  { name: "Priya Nair",     email: "priya@example.com",   mobile: "+65 9111 1001", gender: :female,           roles: [waiter_role, bartender_role] },
-  { name: "Marcus Tan",     email: "marcus@example.com",  mobile: "+65 9111 1002", gender: :male,             roles: [waiter_role] },
-  { name: "Ling Mei",       email: "ling@example.com",    mobile: "+65 9111 1003", gender: :female,           roles: [cleaner_role] },
-  { name: "Sam Rajendran",  email: "sam@example.com",     mobile: "+65 9111 1004", gender: :prefer_not_to_say, roles: [waiter_role, cleaner_role] }
+  { name: "Priya Nair",     email: "priya@example.com",   mobile: "+65 9111 1001", gender: :female,            roles: [ waiter_role, bartender_role ] },
+  { name: "Marcus Tan",     email: "marcus@example.com",  mobile: "+65 9111 1002", gender: :male,              roles: [ waiter_role ] },
+  { name: "Ling Mei",       email: "ling@example.com",    mobile: "+65 9111 1003", gender: :female,            roles: [ cleaner_role ] },
+  { name: "Sam Rajendran",  email: "sam@example.com",     mobile: "+65 9111 1004", gender: :prefer_not_to_say, roles: [ waiter_role, cleaner_role ] }
 ].each do |attrs|
   roles = attrs.delete(:roles).compact
   member = StaffMember.find_or_create_by!(email: attrs[:email]) do |m|

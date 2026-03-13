@@ -5,10 +5,13 @@
       "Bash(bin/rails routes)",
       "Bash(bin/rails generate migration AddUserIdToStaffMembers user_id:integer:index)",
       "Bash(bin/rails generate migration CreateEventInvitations)",
-      "Bash(bin/rails db:migrate)"
+      "Bash(bin/rails db:migrate)",
+      "Bash(bin/rubocop -f github)",
+      "Bash(xxd)"
     ],
     "additionalDirectories": [
-      "/Users/derrick.loo-admin/Documents/flexi_labour/app/views"
+      "/Users/derrick.loo-admin/Documents/flexi_labour/app/views",
+      "/Users/derrick.loo-admin/Documents/flexi_labour/app/controllers"
     ]
   }
 }
