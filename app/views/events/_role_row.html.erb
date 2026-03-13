@@ -10,9 +10,16 @@
       data: { position_field: true } %>
 
   <td class="p-1">
-    <%= f.text_field :role_name,
-        class: field_class(role, :role_name, "input input-bordered input-sm w-full"),
-        placeholder: "e.g. Waiter",
+    <% active_names = Role.active.ordered.pluck(:name) %>
+    <% select_options = if role.role_name.present? && !active_names.include?(role.role_name)
+                          active_names + [["#{role.role_name} (disabled)", role.role_name]]
+                        else
+                          active_names
+                        end %>
+    <%= f.select :role_name,
+        select_options,
+        { include_blank: "Select role...", selected: role.role_name },
+        class: field_class(role, :role_name, "select select-bordered select-sm w-full"),
         required: true %>
   </td>
   <td class="p-1">

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_081753) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_13_015911) do
   create_table "event_roles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "event_id", null: false
@@ -48,6 +48,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_081753) do
     t.string "venue"
     t.integer "wizard_step", default: 1, null: false
     t.index ["user_id"], name: "index_events_on_user_id"
+  end
+
+  create_table "roles", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_roles_on_name", unique: true
   end
 
   create_table "users", force: :cascade do |t|

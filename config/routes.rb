@@ -19,5 +19,11 @@ Rails.application.routes.draw do
 
   get "/approvals", to: "approvals#index", as: :approvals
 
+  resources :roles, except: :show do
+    member do
+      patch :toggle
+    end
+  end
+
   root to: "pages#home"
 end

@@ -1,5 +1,11 @@
 # Seeds are idempotent — safe to run multiple times.
 
+# Staff roles (position types)
+%w[Bartender Cleaner Manager Waiter].each do |name|
+  Role.find_or_create_by!(name: name)
+end
+puts "Roles seeded: #{Role.ordered.pluck(:name).join(', ')}"
+
 # Ops Manager (primary test user)
 ops = User.find_or_create_by!(email: "ops@example.com") do |u|
   u.name     = "Alex Chen"
