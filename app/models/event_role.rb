@@ -3,6 +3,10 @@ class EventRole < ApplicationRecord
   has_many :event_invitations, dependent: :destroy
   has_many :invited_staff_members, through: :event_invitations, source: :staff_member
 
+  def confirmed_count
+    event_invitations.status_accepted.count
+  end
+
   validates :role_name, presence: true
   validates :vacancies, presence: true,
             numericality: { greater_than: 0, only_integer: true }

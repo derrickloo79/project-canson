@@ -1,8 +1,13 @@
 <% content_for :title, "#{@event.event_name} — FlexiLabour" %>
 
+<%
+  invitation_phase = @event.status_approved? || @event.status_invitation_open? || @event.status_fully_staffed?
+%>
+
 <div class="max-w-3xl mx-auto">
   <%= render "rejection_notice", event: @event %>
 
+  <%# Header %>
   <div class="flex items-start justify-between mb-6">
     <div>
       <h1 class="text-2xl font-bold"><%= @event.event_name %></h1>
@@ -28,6 +33,16 @@
           </svg>
           <%= @event.venue %>
         </span>
+        <% if invitation_phase %>
+          <%
+            confirmed = @event.confirmed_staff_count
+            total     = @event.total_vacancies
+            fill_class = confirmed >= total ? "badge-success" : (confirmed > 0 ? "badge-warning" : "badge-neutral")
+          %>
+          <span class="badge <%= fill_class %> badge-sm gap-1">
+            <%= confirmed %> / <%= total %> confirmed
+          </span>
+        <% end %>
       </div>
     </div>
     <div class="flex items-center gap-3">
@@ -54,64 +69,143 @@
     </div>
   <% end %>
 
-  <div class="card bg-base-200 shadow-sm mt-6">
-    <div class="card-body">
-      <h2 class="card-title">Event Details</h2>
-      <dl class="grid grid-cols-4 gap-x-4 gap-y-2 text-sm mt-2">
-        <%= render "event_basics_rows", event: @event %>
-      </dl>
-    </div>
-  </div>
+  <% if invitation_phase %>
+    <%# ── Tabbed layout for invitation phase ────────────────────────────── %>
+    <div role="tablist" class="tabs tabs-border mt-4">
 
-  <div class="card bg-base-200 shadow-sm mt-4">
-    <div class="card-body">
-      <h2 class="card-title">
-        Roles
-        <span class="text-base font-normal text-base-content/60">
-          (<%= @event.event_roles.size %> roles,
-           <%= @event.total_vacancies %> vacancies,
-           est. $<%= number_with_precision(@event.estimated_total_cost, precision: 2, delimiter: ",") %>)
-        </span>
-      </h2>
-      <div class="overflow-x-auto mt-2">
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th>Role</th>
-              <th>Vacancies</th>
-              <th>Shift</th>
-              <th>Rate ($/hr)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @event.event_roles.each do |role| %>
-              <tr>
-                <td class="font-medium"><%= role.role_name %></td>
-                <td><%= role.vacancies %></td>
-                <td class="flex items-center gap-1">
-                  <%= role.shift_start&.strftime("%H:%M") %> –
-                  <%= role.shift_end&.strftime("%H:%M") %>
-                  <% if role.shift_end_next_day? %>
-                    <span class="badge badge-warning badge-sm ml-1">+1</span>
+      <%# Tab 1 — Overview %>
+      <input type="radio" name="event_tabs" role="tab" class="tab" aria-label="Overview" checked />
+      <div role="tabpanel" class="tab-content pt-6">
+        <div class="card bg-base-200 shadow-sm">
+          <div class="card-body">
+            <h2 class="card-title">Event Details</h2>
+            <dl class="grid grid-cols-4 gap-x-4 gap-y-2 text-sm mt-2">
+              <%= render "event_basics_rows", event: @event %>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <%# Tab 2 — Roles & Vacancies %>
+      <input type="radio" name="event_tabs" role="tab" class="tab" aria-label="Roles &amp; Vacancies" />
+      <div role="tabpanel" class="tab-content pt-6">
+        <div class="card bg-base-200 shadow-sm">
+          <div class="card-body">
+            <h2 class="card-title">
+              Roles & Vacancies
+              <span class="text-base font-normal text-base-content/60">
+                (<%= @event.event_roles.size %> roles, <%= @event.total_vacancies %> total vacancies)
+              </span>
+            </h2>
+            <div class="overflow-x-auto mt-2">
+              <table class="table w-full">
+                <thead>
+                  <tr>
+                    <th>Role</th>
+                    <th>Shift</th>
+                    <th>Confirmed</th>
+                    <th>Vacancies</th>
+                    <th>Rate ($/hr)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @event.event_roles.each do |role| %>
+                    <%
+                      cnt = role.confirmed_count
+                      vac = role.vacancies
+                      fill_badge = cnt >= vac ? "badge-success" : (cnt > 0 ? "badge-warning" : "badge-ghost")
+                    %>
+                    <tr>
+                      <td class="font-medium"><%= role.role_name %></td>
+                      <td class="whitespace-nowrap">
+                        <%= role.shift_start&.strftime("%H:%M") %> –
+                        <%= role.shift_end&.strftime("%H:%M") %>
+                        <% if role.shift_end_next_day? %>
+                          <span class="badge badge-warning badge-xs ml-1">+1</span>
+                        <% end %>
+                      </td>
+                      <td>
+                        <span class="badge <%= fill_badge %> badge-sm"><%= cnt %> / <%= vac %></span>
+                      </td>
+                      <td><%= vac %></td>
+                      <td><%= role.rate ? number_with_precision(role.rate, precision: 2, delimiter: ",") : "—" %></td>
+                    </tr>
                   <% end %>
-                </td>
-                <td><%= role.rate ? number_with_precision(role.rate, precision: 2, delimiter: ",") : "—" %></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%# Tab 3 — Staff (In-House) — ops managers only %>
+      <% if current_user.role_ops_manager? %>
+        <input type="radio" name="event_tabs" role="tab" class="tab" aria-label="Staff" />
+        <div role="tabpanel" class="tab-content pt-6">
+          <div class="card bg-base-200 shadow-sm">
+            <div class="card-body">
+              <h2 class="card-title">In-House Staff</h2>
+              <% @event.event_roles.each do |role| %>
+                <%= render "events/staff_role_panel", role: role %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+    </div>
+
+  <% else %>
+    <%# ── Flat layout for draft / pending_approval / rejected ─────────── %>
+    <div class="card bg-base-200 shadow-sm mt-6">
+      <div class="card-body">
+        <h2 class="card-title">Event Details</h2>
+        <dl class="grid grid-cols-4 gap-x-4 gap-y-2 text-sm mt-2">
+          <%= render "event_basics_rows", event: @event %>
+        </dl>
       </div>
     </div>
-  </div>
 
-  <% if current_user.role_ops_manager? && (@event.status_approved? || @event.status_invitation_open?) %>
     <div class="card bg-base-200 shadow-sm mt-4">
       <div class="card-body">
-        <h2 class="card-title">Invite Staff</h2>
-        <% @event.event_roles.each do |role| %>
-          <%= render "events/invite_role_panel", role: role %>
-        <% end %>
+        <h2 class="card-title">
+          Roles
+          <span class="text-base font-normal text-base-content/60">
+            (<%= @event.event_roles.size %> roles,
+             <%= @event.total_vacancies %> vacancies,
+             est. $<%= number_with_precision(@event.estimated_total_cost, precision: 2, delimiter: ",") %>)
+          </span>
+        </h2>
+        <div class="overflow-x-auto mt-2">
+          <table class="table w-full">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Vacancies</th>
+                <th>Shift</th>
+                <th>Rate ($/hr)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @event.event_roles.each do |role| %>
+                <tr>
+                  <td class="font-medium"><%= role.role_name %></td>
+                  <td><%= role.vacancies %></td>
+                  <td class="flex items-center gap-1">
+                    <%= role.shift_start&.strftime("%H:%M") %> –
+                    <%= role.shift_end&.strftime("%H:%M") %>
+                    <% if role.shift_end_next_day? %>
+                      <span class="badge badge-warning badge-sm ml-1">+1</span>
+                    <% end %>
+                  </td>
+                  <td><%= role.rate ? number_with_precision(role.rate, precision: 2, delimiter: ",") : "—" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   <% end %>
+
 </div>

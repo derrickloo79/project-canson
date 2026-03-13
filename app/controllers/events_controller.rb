@@ -30,6 +30,7 @@ class EventsController < ApplicationController
 
   # GET /events/:id
   def show
+    @event.event_roles.includes(event_invitations: :staff_member).load
   end
 
   # GET /events/:id/step1

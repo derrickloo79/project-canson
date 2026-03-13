@@ -1,0 +1,43 @@
+<div class="py-4 border-b border-base-300 last:border-0 last:pb-0 first:pt-0">
+  <h3 class="font-semibold text-sm mb-2">
+    <%= role.role_name %>
+    <span class="font-normal text-base-content/60">
+      (<%= role.confirmed_count %> / <%= role.vacancies %> <%= "vacancy".pluralize(role.vacancies) %> filled)
+    </span>
+  </h3>
+
+  <%# Current invitations list %>
+  <% if role.event_invitations.loaded? ? role.event_invitations.any? : role.event_invitations.exists? %>
+    <ul class="mb-3 space-y-1">
+      <% role.event_invitations.each do |inv| %>
+        <li class="flex items-center gap-2 text-sm">
+          <%= inv.staff_member.name %>
+          <span class="badge badge-xs <%= inv.status_pending? ? 'badge-warning' : (inv.status_accepted? ? 'badge-success' : 'badge-error') %>">
+            <%= inv.status.humanize %>
+          </span>
+          <% if inv.responded? && inv.responded_at %>
+            <span class="text-base-content/40 text-xs"><%= inv.responded_at.strftime("%-d %b %Y %H:%M") %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <%# Invite form — eligible staff only %>
+  <%
+    already_invited_ids = role.event_invitations.pluck(:staff_member_id)
+    eligible = StaffMember.active.ordered.where.not(id: already_invited_ids)
+  %>
+  <% if eligible.any? %>
+    <%= form_with url: event_event_role_event_invitations_path(role.event, role),
+                  method: :post, class: "flex items-center gap-2" do |f| %>
+      <%= f.select :staff_member_id,
+                   eligible.map { |m| [m.name, m.id] },
+                   { prompt: "— Select staff member —" },
+                   class: "select select-bordered select-sm" %>
+      <%= f.submit "Invite", class: "btn btn-primary btn-sm" %>
+    <% end %>
+  <% else %>
+    <p class="text-sm text-base-content/40 italic">All eligible staff already invited.</p>
+  <% end %>
+</div>
