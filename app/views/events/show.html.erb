@@ -178,7 +178,7 @@
                             <td class="font-medium"><%= inv.staff_member.name %></td>
                             <td class="text-base-content/60"><%= inv.staff_member.email %></td>
                             <td class="text-base-content/60"><%= inv.staff_member.mobile.presence || "—" %></td>
-                            <td><%= inv.staff_member.gender&.humanize || "—" %></td>
+                            <td><%= render "gender_badge", gender: inv.staff_member.gender %></td>
                             <td><span class="badge badge-ghost badge-sm">In-House</span></td>
                             <td class="text-base-content/60 whitespace-nowrap">
                               <%= inv.responded_at&.strftime("%-d %b %Y %H:%M") || "—" %>

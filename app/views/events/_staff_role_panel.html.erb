@@ -45,17 +45,10 @@
                              when "declined"  then "badge-error"
                              when "withdrawn" then "badge-neutral"
                              end
-              gender_badge = case inv.staff_member.gender
-                             when "male"       then "badge-info"
-                             when "female"     then "badge-error"
-                             when "non_binary" then "badge-warning"
-                             else                   "badge-neutral"
-                             end
-              gender_label = inv.staff_member.gender&.humanize&.gsub("_", " ") || "—"
             %>
             <tr>
               <td class="font-medium"><%= inv.staff_member.name %></td>
-              <td><span class="badge badge-xs <%= gender_badge %>"><%= gender_label %></span></td>
+              <td><%= render "gender_badge", gender: inv.staff_member.gender %></td>
               <td><span class="badge badge-xs <%= status_badge %>"><%= inv.status.humanize %></span></td>
               <td class="text-xs text-base-content/60">
                 <% if inv.status_pending? %>
@@ -116,15 +109,6 @@
           <%# Scrollable checkbox list %>
           <div class="border border-base-300 rounded-box max-h-60 overflow-y-auto mb-4">
             <% eligible.each do |member| %>
-              <%
-                gender_badge = case member.gender
-                               when "male"       then "badge-info"
-                               when "female"     then "badge-error"
-                               when "non_binary" then "badge-warning"
-                               else                   "badge-neutral"
-                               end
-                gender_label = member.gender&.humanize&.gsub("_", " ") || "—"
-              %>
               <label class="flex items-center gap-3 px-3 py-2 hover:bg-base-200 cursor-pointer">
                 <input type="checkbox"
                        name="staff_member_ids[]"
@@ -133,7 +117,7 @@
                        data-invite-modal-target="checkbox"
                        data-action="change->invite-modal#updateCount" />
                 <span class="text-sm flex-1"><%= member.name %></span>
-                <span class="badge badge-xs <%= gender_badge %>"><%= gender_label %></span>
+                <%= render "gender_badge", gender: member.gender %>
               </label>
             <% end %>
           </div>
