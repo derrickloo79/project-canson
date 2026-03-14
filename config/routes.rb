@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       patch :reject
     end
     resources :event_roles, only: [] do
-      resources :event_invitations, only: :create
+      resources :event_invitations, only: [ :create, :destroy ]
     end
   end
 

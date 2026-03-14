@@ -1,43 +1,163 @@
-<div class="py-4 border-b border-base-300 last:border-0 last:pb-0 first:pt-0">
-  <h3 class="font-semibold text-sm mb-2">
-    <%= role.role_name %>
-    <span class="font-normal text-base-content/60">
-      (<%= role.confirmed_count %> / <%= role.vacancies %> <%= "vacancy".pluralize(role.vacancies) %> filled)
-    </span>
-  </h3>
+<%
+  already_invited_ids = role.event_invitations.pluck(:staff_member_id)
+  eligible = StaffMember.active.ordered
+                        .joins(:roles)
+                        .where(roles: { name: role.role_name })
+                        .where.not(id: already_invited_ids)
+%>
 
-  <%# Current invitations list %>
-  <% if role.event_invitations.loaded? ? role.event_invitations.any? : role.event_invitations.exists? %>
-    <ul class="mb-3 space-y-1">
-      <% role.event_invitations.each do |inv| %>
-        <li class="flex items-center gap-2 text-sm">
-          <%= inv.staff_member.name %>
-          <span class="badge badge-xs <%= inv.status_pending? ? 'badge-warning' : (inv.status_accepted? ? 'badge-success' : 'badge-error') %>">
-            <%= inv.status.humanize %>
-          </span>
-          <% if inv.responded? && inv.responded_at %>
-            <span class="text-base-content/40 text-xs"><%= inv.responded_at.strftime("%-d %b %Y %H:%M") %></span>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
-  <% end %>
+<div class="py-4 border-b border-base-300 last:border-0 last:pb-0 first:pt-0"
+     data-controller="invite-modal">
 
-  <%# Invite form — eligible staff only %>
-  <%
-    already_invited_ids = role.event_invitations.pluck(:staff_member_id)
-    eligible = StaffMember.active.ordered.where.not(id: already_invited_ids)
-  %>
-  <% if eligible.any? %>
-    <%= form_with url: event_event_role_event_invitations_path(role.event, role),
-                  method: :post, class: "flex items-center gap-2" do |f| %>
-      <%= f.select :staff_member_id,
-                   eligible.map { |m| [m.name, m.id] },
-                   { prompt: "— Select staff member —" },
-                   class: "select select-bordered select-sm" %>
-      <%= f.submit "Invite", class: "btn btn-primary btn-sm" %>
+  <%# Role heading row: name + confirmed/vacancies + Invite button %>
+  <div class="flex items-center justify-between mb-2">
+    <h3 class="font-semibold text-sm">
+      <%= role.role_name %>
+      <span class="font-normal text-base-content/60">
+        (<%= role.confirmed_count %> / <%= role.vacancies %> <%= "vacancy".pluralize(role.vacancies) %> filled)
+      </span>
+    </h3>
+    <% if eligible.any? %>
+      <button data-action="invite-modal#open" class="btn btn-outline btn-sm">Invite</button>
     <% end %>
-  <% else %>
-    <p class="text-sm text-base-content/40 italic">All eligible staff already invited.</p>
+  </div>
+
+  <%# Current invitations table %>
+  <% invitations = role.event_invitations.loaded? ? role.event_invitations.to_a : role.event_invitations.includes(:staff_member).to_a %>
+  <% if invitations.any? %>
+    <div class="overflow-x-auto mt-2">
+      <table class="table table-sm w-full">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Status</th>
+            <th>Details</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% invitations.each do |inv| %>
+            <%
+              status_badge = case inv.status
+                             when "pending"   then "badge-warning"
+                             when "accepted"  then "badge-success"
+                             when "declined"  then "badge-error"
+                             when "withdrawn" then "badge-neutral"
+                             end
+              gender_badge = case inv.staff_member.gender
+                             when "male"       then "badge-info"
+                             when "female"     then "badge-error"
+                             when "non_binary" then "badge-warning"
+                             else                   "badge-neutral"
+                             end
+              gender_label = inv.staff_member.gender&.humanize&.gsub("_", " ") || "—"
+            %>
+            <tr>
+              <td class="font-medium"><%= inv.staff_member.name %></td>
+              <td><span class="badge badge-xs <%= gender_badge %>"><%= gender_label %></span></td>
+              <td><span class="badge badge-xs <%= status_badge %>"><%= inv.status.humanize %></span></td>
+              <td class="text-xs text-base-content/60">
+                <% if inv.status_pending? %>
+                  Sent: <%= inv.created_at.strftime("%-d %b %Y %H:%M") %>
+                <% elsif inv.status_accepted? && inv.responded_at %>
+                  Accepted: <%= inv.responded_at.strftime("%-d %b %Y %H:%M") %>
+                <% elsif inv.status_declined? && inv.responded_at %>
+                  Rejected: <%= inv.responded_at.strftime("%-d %b %Y %H:%M") %>
+                <% elsif inv.status_withdrawn? && inv.responded_at %>
+                  Withdrawn: <%= inv.responded_at.strftime("%-d %b %Y %H:%M") %>
+                <% end %>
+              </td>
+              <td>
+                <% unless inv.status_withdrawn? %>
+                  <%= button_to "Withdraw",
+                        event_event_role_event_invitation_path(role.event, role, inv),
+                        method: :delete,
+                        class: "btn btn-ghost btn-xs text-error",
+                        data: { turbo_confirm: "Withdraw invitation for #{inv.staff_member.name}?" } %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   <% end %>
+
+  <% if eligible.none? && invitations.none? %>
+    <p class="text-sm text-base-content/40 italic">No eligible staff to invite.</p>
+  <% end %>
+
+  <%# Invite modal %>
+  <% if eligible.any? %>
+    <%= form_with url: event_event_role_event_invitations_path(role.event, role), method: :post do %>
+      <dialog data-invite-modal-target="modal" class="modal">
+        <div class="modal-box">
+
+          <%# Modal header %>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-lg">Invite Staff — <%= role.role_name %></h3>
+            <button type="button" data-action="invite-modal#close"
+                    class="btn btn-ghost btn-sm btn-square">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <%# Select all / Unselect all %>
+          <div class="flex gap-3 mb-3 text-sm">
+            <button type="button" data-action="invite-modal#selectAll"
+                    class="link link-primary">Select all</button>
+            <button type="button" data-action="invite-modal#unselectAll"
+                    class="link link-neutral">Unselect all</button>
+          </div>
+
+          <%# Scrollable checkbox list %>
+          <div class="border border-base-300 rounded-box max-h-60 overflow-y-auto mb-4">
+            <% eligible.each do |member| %>
+              <%
+                gender_badge = case member.gender
+                               when "male"       then "badge-info"
+                               when "female"     then "badge-error"
+                               when "non_binary" then "badge-warning"
+                               else                   "badge-neutral"
+                               end
+                gender_label = member.gender&.humanize&.gsub("_", " ") || "—"
+              %>
+              <label class="flex items-center gap-3 px-3 py-2 hover:bg-base-200 cursor-pointer">
+                <input type="checkbox"
+                       name="staff_member_ids[]"
+                       value="<%= member.id %>"
+                       class="checkbox checkbox-sm checkbox-primary"
+                       data-invite-modal-target="checkbox"
+                       data-action="change->invite-modal#updateCount" />
+                <span class="text-sm flex-1"><%= member.name %></span>
+                <span class="badge badge-xs <%= gender_badge %>"><%= gender_label %></span>
+              </label>
+            <% end %>
+          </div>
+
+          <%# Modal footer %>
+          <div class="flex justify-end gap-2">
+            <button type="button" data-action="invite-modal#close"
+                    class="btn btn-ghost btn-sm">Cancel</button>
+            <button type="submit"
+                    data-invite-modal-target="submit"
+                    class="btn btn-primary btn-sm"
+                    disabled>
+              <span data-invite-modal-target="sendLabel">Send Invite</span>
+            </button>
+          </div>
+
+        </div>
+
+        <%# Backdrop closes modal %>
+        <form method="dialog" class="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
+    <% end %>
+  <% end %>
+
 </div>
