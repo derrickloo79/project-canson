@@ -43,10 +43,26 @@
       </div>
     </dl>
 
+    <% clashing_role ||= nil %>
+    <% if clashing_role %>
+      <div role="alert" class="alert alert-warning py-2 mt-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+        </svg>
+        <span class="text-sm">
+          Shift conflict with your accepted <strong><%= clashing_role.role_name %></strong>
+          role (<%= clashing_role.shift_start.strftime("%H:%M") %>–<%= clashing_role.shift_end.strftime("%H:%M") %>).
+          Decline or withdraw that role first.
+        </span>
+      </div>
+    <% end %>
+
     <% if show_actions %>
       <div class="flex items-center gap-2 mt-4">
         <%= form_with url: accept_invitation_path(invitation), method: :patch do %>
           <button type="submit" class="btn btn-success btn-sm"
+                  <%= "disabled" if clashing_role %>
                   data-turbo-confirm="Accept this invitation for <%= invitation.event_role.role_name %>?">
             Accept
           </button>
