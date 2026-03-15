@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       patch :blacklist
       patch :unblacklist
       post  :create_login
+      post  :reset_password
     end
   end
 

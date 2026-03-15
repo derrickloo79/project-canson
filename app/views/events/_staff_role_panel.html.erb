@@ -54,7 +54,7 @@
             <tr>
               <td class="font-medium"><%= inv.staff_member.name %></td>
               <td><%= render "gender_badge", gender: inv.staff_member.gender %></td>
-              <td><span class="badge badge-xs <%= status_badge %>"><%= inv.status.humanize %></span></td>
+              <td><span class="badge badge-sm <%= status_badge %>"><%= inv.status.humanize %></span></td>
               <td class="text-xs text-base-content/60" data-sort-value="<%= sort_ts %>">
                 <% if inv.status_pending? %>
                   Sent: <%= inv.created_at.strftime("%-d %b %Y %H:%M") %>

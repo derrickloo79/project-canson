@@ -1,7 +1,7 @@
 class StaffMembersController < ApplicationController
   before_action :authenticate_user!
   before_action :authorize_staff_access!
-  before_action :set_staff_member, only: %i[show edit update destroy blacklist unblacklist create_login]
+  before_action :set_staff_member, only: %i[show edit update destroy blacklist unblacklist create_login reset_password]
 
   def index
     @staff_members = StaffMember.ordered.includes(:roles)
@@ -60,6 +60,18 @@ class StaffMembersController < ApplicationController
       redirect_to staff_member_path(@staff_member),
         alert: "Could not create login: #{user.errors.full_messages.to_sentence}"
     end
+  end
+
+  # POST /staff_members/:id/reset_password
+  def reset_password
+    unless @staff_member.has_login?
+      redirect_to staff_member_path(@staff_member), alert: "This staff member has no login to reset."
+      return
+    end
+    temp_password = SecureRandom.alphanumeric(12)
+    @staff_member.user.update!(password: temp_password)
+    flash[:temp_password] = temp_password
+    redirect_to staff_member_path(@staff_member), notice: "Password reset for #{@staff_member.name}."
   end
 
   # PATCH /staff_members/:id/blacklist

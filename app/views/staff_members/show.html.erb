@@ -24,6 +24,11 @@
         <%= link_to edit_staff_member_path(@staff_member), class: "btn btn-outline btn-sm" do %>
           Edit
         <% end %>
+        <% if @staff_member.has_login? %>
+          <%= button_to "Reset Password", reset_password_staff_member_path(@staff_member), method: :post,
+              class: "btn btn-outline btn-sm",
+              data: { turbo_confirm: "Reset password for #{@staff_member.name}? A new temporary password will be generated." } %>
+        <% end %>
         <% if can_blacklist? && !@staff_member.blacklisted? %>
           <button type="button" class="btn btn-outline btn-warning btn-sm"
                   onclick="document.getElementById('blacklist-modal').showModal()">

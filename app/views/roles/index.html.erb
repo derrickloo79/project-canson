@@ -12,7 +12,7 @@
       <p class="mt-1">Add roles that ops managers can assign to event vacancies.</p>
     </div>
   <% else %>
-    <div class="card bg-base-200 shadow-sm">
+    <div class="card bg-base-100 border border-base-200 shadow-sm">
       <ul class="divide-y divide-base-300">
         <% @roles.each do |role| %>
           <li class="flex items-center justify-between px-4 py-3 <%= 'opacity-50' unless role.active? %>">

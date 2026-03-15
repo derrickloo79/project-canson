@@ -14,7 +14,7 @@
   </div>
 <% else %>
   <div class="card bg-base-100 border border-base-200 shadow-sm overflow-x-auto">
-    <table class="table table-sm" data-controller="table-sort">
+    <table class="table table-zebra" data-controller="table-sort">
       <thead>
         <tr>
           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Name</th>
@@ -29,22 +29,20 @@
       <tbody>
         <% @staff_members.each do |member| %>
           <tr class="<%= 'opacity-60' if member.blacklisted? %>">
-            <td>
-              <%= link_to member.name, staff_member_path(member), class: "font-medium hover:underline" %>
+            <td class="font-medium">
+              <%= link_to member.name, staff_member_path(member), class: "link link-hover" %>
             </td>
             <td class="text-sm text-base-content/70"><%= member.email %></td>
             <td class="text-sm text-base-content/70"><%= member.mobile.presence || "—" %></td>
-            <td class="text-sm text-base-content/70">
-              <%= member.gender.present? ? member.gender.humanize.gsub("_", " ").capitalize : "—" %>
-            </td>
+            <td><%= render "gender_badge", gender: member.gender %></td>
             <td>
               <div class="flex flex-wrap gap-1">
                 <% if member.roles.any? %>
                   <% member.roles.each do |role| %>
-                    <span class="badge badge-neutral badge-xs"><%= role.name %></span>
+                    <span class="badge badge-neutral badge-sm"><%= role.name %></span>
                   <% end %>
                 <% else %>
-                  <span class="text-base-content/40 text-xs">—</span>
+                  <span class="text-base-content/40 text-sm">—</span>
                 <% end %>
               </div>
             </td>
