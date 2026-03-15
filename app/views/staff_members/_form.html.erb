@@ -75,7 +75,7 @@
   </div>
 
   <div class="flex items-center gap-3 pt-2">
-    <%= f.submit class: "btn btn-primary" %>
+    <%= f.submit(f.object.new_record? ? "Add Staff Member" : "Update", class: "btn btn-primary") %>
     <%= link_to "Cancel", staff_members_path, class: "btn btn-ghost" %>
   </div>
 <% end %>
