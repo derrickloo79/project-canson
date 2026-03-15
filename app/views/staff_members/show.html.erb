@@ -24,6 +24,12 @@
         <%= link_to edit_staff_member_path(@staff_member), class: "btn btn-outline btn-sm" do %>
           Edit
         <% end %>
+        <% if can_blacklist? && !@staff_member.blacklisted? %>
+          <button type="button" class="btn btn-outline btn-warning btn-sm"
+                  onclick="document.getElementById('blacklist-modal').showModal()">
+            Blacklist
+          </button>
+        <% end %>
         <%= button_to "Remove", staff_member_path(@staff_member), method: :delete,
             class: "btn btn-outline btn-error btn-sm",
             data: { turbo_confirm: "Remove \"#{@staff_member.name}\" from the directory? This cannot be undone." } %>
@@ -69,9 +75,9 @@
         </p>
       </div>
       <% if can_blacklist? %>
-        <%= button_to "Reinstate", unblacklist_staff_member_path(@staff_member), method: :patch,
+        <%= button_to "Remove from Blacklist", unblacklist_staff_member_path(@staff_member), method: :patch,
             class: "btn btn-sm btn-outline",
-            data: { turbo_confirm: "Reinstate \"#{@staff_member.name}\"?" } %>
+            data: { turbo_confirm: "Remove \"#{@staff_member.name}\" from the blacklist?" } %>
       <% end %>
     </div>
   <% end %>
@@ -141,26 +147,36 @@
     </div>
   <% end %>
 
-  <%# Blacklist action (for approving managers / admins only) %>
+  <%# Blacklist modal %>
   <% if can_blacklist? && !@staff_member.blacklisted? %>
-    <div class="card bg-base-100 border border-error/30 shadow-sm">
-      <div class="card-body">
-        <h2 class="card-title text-error text-base">Blacklist Staff Member</h2>
-        <p class="text-sm text-base-content/60 mb-4">
-          Blacklisting will prevent this staff member from being assigned to events.
+    <dialog id="blacklist-modal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">Blacklist staff member?</h3>
+        <p class="text-sm text-base-content/60 mt-1 mb-4">
+          "<%= @staff_member.name %>" will be prevented from being assigned to events.
         </p>
         <%= form_with url: blacklist_staff_member_path(@staff_member), method: :patch do |f| %>
           <div class="form-control mb-4">
-            <%= f.label :blacklist_reason, "Reason", class: "label" %>
+            <label class="label">
+              <span class="label-text font-medium">Reason <span class="text-error">*</span></span>
+            </label>
             <%= f.text_area :blacklist_reason, rows: 3,
-                class: "textarea textarea-bordered textarea-error w-full",
+                class: "textarea textarea-bordered w-full",
                 placeholder: "Provide a reason for blacklisting this staff member…",
                 required: true %>
           </div>
-          <%= f.submit "Blacklist", class: "btn btn-error btn-sm",
-              data: { turbo_confirm: "Blacklist \"#{@staff_member.name}\"? They will no longer be available for events." } %>
+          <div class="modal-action">
+            <button type="button" class="btn btn-ghost"
+                    onclick="document.getElementById('blacklist-modal').close()">
+              Cancel
+            </button>
+            <%= f.submit "Blacklist", class: "btn btn-error" %>
+          </div>
         <% end %>
       </div>
-    </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
   <% end %>
 </div>
