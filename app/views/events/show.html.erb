@@ -161,15 +161,15 @@
                 <%# Confirmed staff table %>
                 <% if confirmed_invitations.any? %>
                   <div class="overflow-x-auto mt-1">
-                    <table class="table table-sm w-full">
+                    <table class="table table-sm w-full" data-controller="table-sort">
                       <thead>
                         <tr>
-                          <th>Full Name</th>
-                          <th>Email</th>
-                          <th>Mobile</th>
-                          <th>Gender</th>
-                          <th>Source</th>
-                          <th>Accepted</th>
+                          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Full Name</th>
+                          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Email</th>
+                          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Mobile</th>
+                          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Gender</th>
+                          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Source</th>
+                          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Accepted</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -180,7 +180,7 @@
                             <td class="text-base-content/60"><%= inv.staff_member.mobile.presence || "—" %></td>
                             <td><%= render "gender_badge", gender: inv.staff_member.gender %></td>
                             <td><span class="badge badge-ghost badge-sm">In-House</span></td>
-                            <td class="text-base-content/60 whitespace-nowrap">
+                            <td class="text-base-content/60 whitespace-nowrap" data-sort-value="<%= inv.responded_at&.iso8601 || "" %>">
                               <%= inv.responded_at&.strftime("%-d %b %Y %H:%M") || "—" %>
                             </td>
                           </tr>

@@ -14,15 +14,15 @@
   </div>
 <% else %>
   <div class="card bg-base-100 border border-base-200 shadow-sm overflow-x-auto">
-    <table class="table table-sm">
+    <table class="table table-sm" data-controller="table-sort">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Mobile</th>
-          <th>Gender</th>
-          <th>Roles</th>
-          <th>Status</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Name</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Email</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Mobile</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Gender</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Roles</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Status</th>
           <th></th>
         </tr>
       </thead>

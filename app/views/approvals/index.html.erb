@@ -14,16 +14,16 @@
   </div>
 <% else %>
   <div class="overflow-x-auto">
-    <table class="table table-zebra w-full">
+    <table class="table table-zebra w-full" data-controller="table-sort">
       <thead>
         <tr>
-          <th>Event Name</th>
-          <th>Ops Manager</th>
-          <th>Type</th>
-          <th>Dates</th>
-          <th>Venue</th>
-          <th>Roles</th>
-          <th>Submitted</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Event Name</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Ops Manager</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Type</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Dates</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Venue</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Roles</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Submitted</th>
           <th></th>
         </tr>
       </thead>
@@ -35,7 +35,7 @@
             </td>
             <td><%= event.user.name %></td>
             <td><%= event.event_type&.humanize %></td>
-            <td>
+            <td data-sort-value="<%= event.event_date&.iso8601 || "" %>">
               <%= event.event_date&.strftime("%d %b %Y") %>
               <% if event.multi_day? && event.event_end_date %>
                 <span class="text-base-content/50"> – </span>
@@ -44,7 +44,7 @@
             </td>
             <td><%= event.venue %></td>
             <td class="text-center"><%= event.event_roles.size %></td>
-            <td class="text-sm text-base-content/60"><%= event.updated_at.strftime("%d %b %Y") %></td>
+            <td class="text-sm text-base-content/60" data-sort-value="<%= event.updated_at.iso8601 %>"><%= event.updated_at.strftime("%d %b %Y") %></td>
             <td>
               <div class="flex items-center gap-1">
                 <%# Approve button %>
