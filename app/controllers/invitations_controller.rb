@@ -29,12 +29,13 @@ class InvitationsController < ApplicationController
     accepted_roles = current_user.staff_member
                                  .event_invitations
                                  .status_accepted
-                                 .includes(:event_role)
+                                 .includes(event_role: :event)
                                  .map(&:event_role)
     clashing = accepted_roles.find { |r| r.clashes_with?(@invitation.event_role) }
     if clashing
+      location = clashing.event_id == @invitation.event_role.event_id ? "at this event" : "at #{clashing.event.event_name}"
       redirect_to invitations_path,
-                  alert: "Shift conflict with your #{clashing.role_name} role " \
+                  alert: "Shift conflict with your #{clashing.role_name} role #{location} " \
                          "(#{clashing.shift_start.strftime('%H:%M')}–#{clashing.shift_end.strftime('%H:%M')}). " \
                          "You cannot accept overlapping shifts."
       return

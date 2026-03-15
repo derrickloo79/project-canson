@@ -8,8 +8,10 @@ class EventRole < ApplicationRecord
   end
 
   # Returns true if this role's shift overlaps with other_role's shift.
-  # Times are compared as seconds-since-midnight; next-day end adds 86 400 s.
+  # For different events, also requires their date ranges to overlap.
   def clashes_with?(other_role)
+    return false if event_id != other_role.event_id && !event.date_overlaps_with?(other_role.event)
+
     a_start = shift_start.seconds_since_midnight
     a_end   = shift_end.seconds_since_midnight + (shift_end_next_day? ? 86_400 : 0)
     b_start = other_role.shift_start.seconds_since_midnight

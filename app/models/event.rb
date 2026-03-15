@@ -78,6 +78,14 @@ class Event < ApplicationRecord
     (event_end_date - event_date).to_i + 1
   end
 
+  def date_overlaps_with?(other_event)
+    a_start = event_date
+    a_end   = (multi_day? && event_end_date) ? event_end_date : event_date
+    b_start = other_event.event_date
+    b_end   = (other_event.multi_day? && other_event.event_end_date) ? other_event.event_end_date : other_event.event_date
+    a_start <= b_end && b_start <= a_end
+  end
+
   def estimated_total_cost
     days = event_days
     event_roles.sum do |role|

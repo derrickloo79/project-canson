@@ -2,12 +2,31 @@
   <div class="card-body">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <h3 class="font-semibold text-base"><%= invitation.event_role.event.event_name %></h3>
-        <p class="text-sm text-base-content/60 mt-0.5">
-          <%= invitation.event_role.event.venue %>
-          &mdash;
-          <%= invitation.event_role.event.event_date&.strftime("%a, %-d %b %Y") %>
-        </p>
+        <% event = invitation.event_role.event %>
+        <h3 class="font-semibold text-base"><%= event.event_name %></h3>
+        <div class="flex flex-col gap-1 mt-1 text-sm text-base-content/60">
+          <span class="flex items-center gap-1.5 whitespace-nowrap">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <%= event.event_date&.strftime("%a, %-d %b %Y") %>
+            <% if event.multi_day? && event.event_end_date %>
+              <span>–</span>
+              <%= event.event_end_date.strftime("%a, %-d %b %Y") %>
+              <span class="badge badge-outline badge-xs uppercase">Multi-day</span>
+            <% end %>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <%= event.venue %>
+          </span>
+        </div>
       </div>
       <% unless invitation.status_pending? %>
         <span class="badge shrink-0 <%= invitation.status_accepted? ? 'badge-success' : 'badge-error' %>">
@@ -43,16 +62,21 @@
       </div>
     </dl>
 
-    <% clashing_role ||= nil %>
-    <% if clashing_role %>
+    <% clash_info ||= nil %>
+    <% if clash_info %>
+      <%
+        same_event = clash_info.event_id == invitation.event_role.event_id
+        location   = same_event ? "at this event" : "at #{clash_info.event.event_name}"
+      %>
       <div role="alert" class="alert alert-warning py-2 mt-3">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
         </svg>
         <span class="text-sm">
-          Shift conflict with your accepted <strong><%= clashing_role.role_name %></strong>
-          role (<%= clashing_role.shift_start.strftime("%H:%M") %>–<%= clashing_role.shift_end.strftime("%H:%M") %>).
+          Shift conflict with your accepted <strong><%= clash_info.role_name %></strong>
+          role <%= location %>
+          (<%= clash_info.shift_start.strftime("%H:%M") %>–<%= clash_info.shift_end.strftime("%H:%M") %>).
           Decline or withdraw that role first.
         </span>
       </div>
@@ -62,7 +86,7 @@
       <div class="flex items-center gap-2 mt-4">
         <%= form_with url: accept_invitation_path(invitation), method: :patch do %>
           <button type="submit" class="btn btn-success btn-sm"
-                  <%= "disabled" if clashing_role %>
+                  <%= "disabled" if clash_info %>
                   data-turbo-confirm="Accept this invitation for <%= invitation.event_role.role_name %>?">
             Accept
           </button>
