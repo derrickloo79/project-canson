@@ -36,7 +36,18 @@
               <% end %>
             </td>
             <td><%= event.venue %></td>
-            <td><%= render "event_status_badge", event: event %></td>
+            <td>
+              <div class="flex flex-col items-start gap-1">
+                <%= render "event_status_badge", event: event %>
+                <% if event.status_approved? || event.status_invitation_open? || event.status_fully_staffed? %>
+                  <% if event.confirmed_staff_count >= event.total_vacancies %>
+                    <span class="badge badge-success badge-sm">Fully Staffed</span>
+                  <% else %>
+                    <span class="badge badge-warning badge-sm">Invitations Open</span>
+                  <% end %>
+                <% end %>
+              </div>
+            </td>
             <td>
               <div class="flex items-center gap-1">
                 <% if event.status_draft? %>
