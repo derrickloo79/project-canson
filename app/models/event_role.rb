@@ -2,9 +2,20 @@ class EventRole < ApplicationRecord
   belongs_to :event
   has_many :event_invitations, dependent: :destroy
   has_many :invited_staff_members, through: :event_invitations, source: :staff_member
+  has_many :agency_staffing_requests, dependent: :destroy
 
   def confirmed_count
+    inhouse = event_invitations.status_accepted.count
+    agency  = agency_staffing_requests.sum(&:candidates_accepted_count)
+    inhouse + agency
+  end
+
+  def inhouse_confirmed_count
     event_invitations.status_accepted.count
+  end
+
+  def agency_confirmed_count
+    agency_staffing_requests.sum(&:candidates_accepted_count)
   end
 
   # Returns true if this role's shift overlaps with other_role's shift.

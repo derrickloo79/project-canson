@@ -1,0 +1,173 @@
+<% content_for :title, "Staffing Request — FlexiLabour" %>
+
+<%
+  event = @request.event_role.event
+  role  = @request.event_role
+%>
+
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to agency_incoming_requests_path, class: "btn btn-ghost btn-sm btn-square" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    <% end %>
+    <h1 class="text-2xl font-bold">Staffing Request</h1>
+  </div>
+
+  <%# Request summary card %>
+  <div class="card bg-base-200 border border-base-200 shadow-sm mb-6">
+    <div class="card-body">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="font-bold text-lg"><%= event.event_name %></h2>
+          <p class="text-sm text-base-content/60 mt-0.5">
+            <%= event.event_date&.strftime("%-d %b %Y") %> · <%= event.venue %>
+          </p>
+        </div>
+        <% case @request.status
+           when "pending" %>
+          <span class="badge badge-warning">Pending</span>
+        <% when "submitted" %>
+          <span class="badge badge-info">Submitted</span>
+        <% when "declined" %>
+          <span class="badge badge-error">Declined</span>
+        <% when "cancelled" %>
+          <span class="badge badge-ghost">Cancelled</span>
+        <% end %>
+      </div>
+
+      <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mt-3">
+        <dt class="text-base-content/50">Role</dt>
+        <dd class="font-medium"><%= role.role_name %></dd>
+
+        <dt class="text-base-content/50">Shift</dt>
+        <dd>
+          <%= role.shift_start&.strftime("%H:%M") %> – <%= role.shift_end&.strftime("%H:%M") %>
+          <% if role.shift_end_next_day? %>
+            <span class="badge badge-warning badge-xs ml-1">+1</span>
+          <% end %>
+        </dd>
+
+        <dt class="text-base-content/50">Staff Needed</dt>
+        <dd><%= @request.vacancies_requested %></dd>
+
+        <dt class="text-base-content/50">Received</dt>
+        <dd><%= @request.created_at.strftime("%-d %b %Y") %></dd>
+
+        <% if @request.notes.present? %>
+          <dt class="text-base-content/50">Notes from Hotel</dt>
+          <dd><%= @request.notes %></dd>
+        <% end %>
+      </dl>
+    </div>
+  </div>
+
+  <% if @request.status_cancelled? %>
+    <div class="alert alert-warning mb-6">
+      <span>This request has been cancelled by the hotel.</span>
+    </div>
+
+  <% elsif @request.status_declined? %>
+    <div class="alert alert-error mb-6">
+      <div>
+        <p class="font-semibold">You declined this request.</p>
+        <% if @request.declined_reason.present? %>
+          <p class="text-sm mt-1">Reason: <%= @request.declined_reason %></p>
+        <% end %>
+      </div>
+    </div>
+
+  <% elsif @request.status_submitted? %>
+    <%# Show submitted candidates with hotel's decisions %>
+    <div class="card bg-base-100 border border-base-200 shadow-sm mb-6">
+      <div class="card-body">
+        <h2 class="card-title text-base">Submitted Candidates</h2>
+        <% if @request.agency_staffing_candidates.any? %>
+          <table class="table table-sm mt-2">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @request.agency_staffing_candidates.each do |candidate| %>
+                <tr>
+                  <td class="font-medium"><%= candidate.agency_staff_member.name %></td>
+                  <td class="text-sm text-base-content/60"><%= candidate.agency_staff_member.email %></td>
+                  <td>
+                    <div class="flex flex-wrap gap-1">
+                      <% candidate.agency_staff_member.roles.each do |r| %>
+                        <span class="badge badge-ghost badge-xs"><%= r.name %></span>
+                      <% end %>
+                    </div>
+                  </td>
+                  <td>
+                    <% case candidate.status
+                       when "submitted" %>
+                      <span class="badge badge-ghost badge-sm">Awaiting Decision</span>
+                    <% when "accepted" %>
+                      <span class="badge badge-success badge-sm">Accepted</span>
+                    <% when "rejected" %>
+                      <span class="badge badge-error badge-sm">Rejected</span>
+                      <% if candidate.rejection_reason.present? %>
+                        <span class="text-xs text-base-content/50 block"><%= candidate.rejection_reason %></span>
+                      <% end %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Add more candidates if not all vacancies filled %>
+    <% remaining = @request.vacancies_requested - @request.candidates_accepted_count %>
+    <% unsubmitted = @roster.reject { |m| @submitted_ids.include?(m.id) } %>
+    <% if remaining > 0 && unsubmitted.any? && current_user.role_agency_admin? %>
+      <div class="card bg-base-100 border border-base-200 shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-base">Add More Candidates</h2>
+          <p class="text-sm text-base-content/60"><%= remaining %> slot(s) still open.</p>
+          <%= render "submit_form", request: @request, roster: unsubmitted, submitted_ids: @submitted_ids %>
+        </div>
+      </div>
+    <% end %>
+
+  <% elsif @request.status_pending? && current_user.role_agency_admin? %>
+    <%# Submit candidates form %>
+    <div class="card bg-base-100 border border-base-200 shadow-sm mb-4">
+      <div class="card-body">
+        <h2 class="card-title text-base">Submit Candidates</h2>
+        <p class="text-sm text-base-content/60 mb-3">
+          Select staff from your roster to submit for this role.
+        </p>
+        <%= render "submit_form", request: @request, roster: @roster, submitted_ids: @submitted_ids %>
+      </div>
+    </div>
+
+    <%# Decline section %>
+    <div class="card bg-base-100 border border-base-200 shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title text-base text-error">Decline Request</h2>
+        <%= form_with url: decline_agency_incoming_request_path(@request), method: :patch, class: "space-y-3 mt-2" do %>
+          <div class="form-control">
+            <%= label_tag :declined_reason, "Reason (optional)", class: "label" %>
+            <%= text_area_tag :declined_reason, nil,
+                class: "textarea textarea-bordered w-full",
+                rows: 2,
+                placeholder: "No capacity, scheduling conflict, etc." %>
+          </div>
+          <%= submit_tag "Decline Request",
+              class: "btn btn-error btn-outline btn-sm",
+              data: { turbo_confirm: "Are you sure you want to decline this request?" } %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

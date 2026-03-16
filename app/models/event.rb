@@ -57,7 +57,7 @@ class Event < ApplicationRecord
 
   # Summary helpers used by the Step 2 panel and show page
   def confirmed_staff_count
-    event_roles.sum { |r| r.event_invitations.status_accepted.count }
+    event_roles.sum(&:confirmed_count)
   end
 
   def total_vacancies

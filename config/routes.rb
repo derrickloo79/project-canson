@@ -18,6 +18,23 @@ Rails.application.routes.draw do
     resources :event_roles, only: [] do
       resources :event_invitations, only: [ :create, :destroy ]
     end
+    resources :agency_staffing_requests, only: %i[create destroy]
+  end
+
+  # Hotel side: accept/reject individual agency candidates
+  resources :agency_staffing_candidates, only: [] do
+    member do
+      patch :accept
+      patch :reject
+    end
+  end
+
+  # Agency side: incoming staffing requests from the hotel
+  resources :agency_incoming_requests, only: %i[index show] do
+    member do
+      patch :decline
+      patch :submit_candidates
+    end
   end
 
   get "/approvals", to: "approvals#index", as: :approvals

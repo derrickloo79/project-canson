@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_16_095113) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_16_102439) do
   create_table "agencies", force: :cascade do |t|
     t.string "contact_email", null: false
     t.datetime "created_at", null: false
@@ -60,6 +60,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_16_095113) do
     t.datetime "updated_at", null: false
     t.index ["agency_id", "email"], name: "index_agency_staff_members_on_agency_id_and_email", unique: true
     t.index ["agency_id"], name: "index_agency_staff_members_on_agency_id"
+  end
+
+  create_table "agency_staffing_candidates", force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.integer "agency_staff_member_id", null: false
+    t.integer "agency_staffing_request_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "rejected_at"
+    t.text "rejection_reason"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["agency_staff_member_id"], name: "index_agency_staffing_candidates_on_agency_staff_member_id"
+    t.index ["agency_staffing_request_id", "agency_staff_member_id"], name: "idx_on_agency_staffing_request_id_agency_staff_memb_6ef8e1834a", unique: true
+    t.index ["agency_staffing_request_id"], name: "index_agency_staffing_candidates_on_agency_staffing_request_id"
+  end
+
+  create_table "agency_staffing_requests", force: :cascade do |t|
+    t.integer "agency_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "declined_at"
+    t.text "declined_reason"
+    t.integer "event_role_id", null: false
+    t.text "notes"
+    t.integer "requested_by_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "submitted_at"
+    t.datetime "updated_at", null: false
+    t.integer "vacancies_requested", null: false
+    t.index ["agency_id"], name: "index_agency_staffing_requests_on_agency_id"
+    t.index ["event_role_id", "agency_id"], name: "index_agency_staffing_requests_on_event_role_id_and_agency_id", unique: true
+    t.index ["event_role_id"], name: "index_agency_staffing_requests_on_event_role_id"
+    t.index ["requested_by_id"], name: "index_agency_staffing_requests_on_requested_by_id"
   end
 
   create_table "event_invitations", force: :cascade do |t|
@@ -168,6 +200,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_16_095113) do
   add_foreign_key "agency_staff_member_roles", "agency_staff_members"
   add_foreign_key "agency_staff_member_roles", "roles"
   add_foreign_key "agency_staff_members", "agencies"
+  add_foreign_key "agency_staffing_candidates", "agency_staff_members"
+  add_foreign_key "agency_staffing_candidates", "agency_staffing_requests"
+  add_foreign_key "agency_staffing_requests", "agencies"
+  add_foreign_key "agency_staffing_requests", "event_roles"
+  add_foreign_key "agency_staffing_requests", "users", column: "requested_by_id"
   add_foreign_key "event_invitations", "event_roles"
   add_foreign_key "event_invitations", "staff_members"
   add_foreign_key "event_roles", "events"

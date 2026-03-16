@@ -3,6 +3,7 @@ class Agency < ApplicationRecord
   has_one    :agency_connection, dependent: :destroy
   has_many   :users, dependent: :nullify
   has_many   :agency_staff_members, dependent: :destroy
+  has_many   :agency_staffing_requests, dependent: :destroy
 
   validates :name,            presence: true
   validates :contact_email,   presence: true,

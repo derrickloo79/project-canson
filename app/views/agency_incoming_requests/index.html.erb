@@ -1,0 +1,66 @@
+<% content_for :title, "Staffing Requests — FlexiLabour" %>
+
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">Staffing Requests</h1>
+</div>
+
+<% if @requests.empty? %>
+  <div class="text-center py-16 text-base-content/50">
+    <p class="text-lg">No staffing requests yet.</p>
+    <p class="mt-1">Requests from the hotel will appear here.</p>
+  </div>
+<% else %>
+  <div class="card bg-base-100 border border-base-200 shadow-sm overflow-x-auto">
+    <table class="table table-zebra" data-controller="table-sort">
+      <thead>
+        <tr>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Event</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Date</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Role</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Shift</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Staff Needed</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Received</th>
+          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @requests.each do |req| %>
+          <tr>
+            <td class="font-medium"><%= req.event_role.event.event_name %></td>
+            <td class="text-sm text-base-content/70 whitespace-nowrap"
+                data-sort-value="<%= req.event_role.event.event_date&.iso8601 %>">
+              <%= req.event_role.event.event_date&.strftime("%-d %b %Y") %>
+            </td>
+            <td><%= req.event_role.role_name %></td>
+            <td class="text-sm text-base-content/70 whitespace-nowrap">
+              <%= req.event_role.shift_start&.strftime("%H:%M") %> – <%= req.event_role.shift_end&.strftime("%H:%M") %>
+            </td>
+            <td><%= req.vacancies_requested %></td>
+            <td class="text-sm text-base-content/70 whitespace-nowrap"
+                data-sort-value="<%= req.created_at.iso8601 %>">
+              <%= req.created_at.strftime("%-d %b %Y") %>
+            </td>
+            <td>
+              <% case req.status
+                 when "pending" %>
+                <span class="badge badge-warning badge-sm">Pending</span>
+              <% when "submitted" %>
+                <span class="badge badge-info badge-sm">Submitted</span>
+              <% when "declined" %>
+                <span class="badge badge-error badge-sm">Declined</span>
+              <% when "cancelled" %>
+                <span class="badge badge-ghost badge-sm">Cancelled</span>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to agency_incoming_request_path(req), class: "btn btn-ghost btn-xs" do %>
+                View →
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

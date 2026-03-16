@@ -11,7 +11,9 @@
       "Bash(bin/rails runner \"Agency; AgencyConnection; puts ''Models OK''\")",
       "Bash(bin/rails runner \":*)",
       "Bash(bin/rails generate migration CreateAgencyStaffMembers agency:references name:string email:string mobile:string gender:integer active:boolean)",
-      "Bash(bin/rails generate migration CreateAgencyStaffMemberRoles agency_staff_member:references role:references)"
+      "Bash(bin/rails generate migration CreateAgencyStaffMemberRoles agency_staff_member:references role:references)",
+      "Bash(bin/rails generate migration CreateAgencyStaffingRequests event_role:references agency:references requested_by:references vacancies_requested:integer notes:text status:integer declined_at:datetime declined_reason:text submitted_at:datetime)",
+      "Bash(bin/rails generate migration CreateAgencyStaffingCandidates agency_staffing_request:references agency_staff_member:references status:integer accepted_at:datetime rejected_at:datetime rejection_reason:text)"
     ],
     "additionalDirectories": [
       "/Users/derrick.loo-admin/Documents/flexi_labour/app/views",

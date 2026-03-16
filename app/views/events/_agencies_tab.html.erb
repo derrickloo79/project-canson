@@ -1,0 +1,223 @@
+<%# Agencies tab — ops manager view for sending/managing agency staffing requests %>
+
+<% if connected_agencies.empty? %>
+  <div class="text-center py-16 text-base-content/50">
+    <p class="text-lg">No connected agencies.</p>
+    <p class="mt-1">Ask your system admin to invite and connect an agency first.</p>
+  </div>
+<% else %>
+  <div class="space-y-4">
+    <% event.event_roles.each do |role| %>
+      <%
+        requests         = role.agency_staffing_requests.reject(&:status_cancelled?)
+        requested_ids    = requests.map(&:agency_id)
+        available        = connected_agencies.reject { |a| requested_ids.include?(a.id) }
+        inhouse_cnt      = role.inhouse_confirmed_count
+        agency_cnt       = role.agency_confirmed_count
+        total_cnt        = inhouse_cnt + agency_cnt
+        vac              = role.vacancies
+        fill_badge       = total_cnt >= vac ? "badge-success" : (total_cnt > 0 ? "badge-warning" : "badge-neutral")
+        default_vacancies = [ vac - total_cnt, 1 ].max
+        modal_id         = "modal-agency-request-#{role.id}"
+      %>
+      <div class="card bg-base-200 border border-base-200 shadow-sm">
+        <div class="card-body gap-4">
+
+          <%# Role header row %>
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-3 flex-wrap">
+              <h3 class="font-bold text-base"><%= role.role_name %></h3>
+              <span class="text-sm text-base-content/60">
+                <%= role.shift_start&.strftime("%H:%M") %> – <%= role.shift_end&.strftime("%H:%M") %>
+                <% if role.shift_end_next_day? %>
+                  <span class="badge badge-warning badge-xs ml-1">+1</span>
+                <% end %>
+              </span>
+              <span class="badge <%= fill_badge %> badge-sm"><%= total_cnt %> / <%= vac %> Filled</span>
+            </div>
+            <% unless available.empty? %>
+              <label for="<%= modal_id %>" class="btn btn-outline btn-sm cursor-pointer">
+                Send Request to Agency
+              </label>
+            <% end %>
+          </div>
+
+          <%# Existing requests table %>
+          <% if requests.any? %>
+            <div class="overflow-x-auto">
+              <table class="table table-sm w-full">
+                <thead>
+                  <tr>
+                    <th>Agency</th>
+                    <th>Sent</th>
+                    <th>Vacancies Requested</th>
+                    <th>Status</th>
+                    <th>Candidates</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% requests.each do |req| %>
+                    <tr>
+                      <td class="font-medium"><%= req.agency.name %></td>
+                      <td class="text-sm text-base-content/60 whitespace-nowrap">
+                        <%= req.created_at.strftime("%-d %b %Y") %>
+                      </td>
+                      <td><%= req.vacancies_requested %></td>
+                      <td>
+                        <% case req.status
+                           when "pending" %>
+                          <span class="badge badge-warning badge-sm">Pending</span>
+                        <% when "submitted" %>
+                          <span class="badge badge-info badge-sm">Submitted</span>
+                        <% when "declined" %>
+                          <span class="badge badge-error badge-sm">Declined</span>
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if req.status_submitted? %>
+                          <span class="text-sm">
+                            <%= req.candidates_submitted_count %> submitted,
+                            <%= req.candidates_accepted_count %> accepted
+                          </span>
+                        <% else %>
+                          <span class="text-base-content/40 text-sm">—</span>
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if req.status_pending? %>
+                          <%= button_to event_agency_staffing_request_path(event, req),
+                              method: :delete,
+                              class: "btn btn-ghost btn-xs text-error",
+                              data: { turbo_confirm: "Cancel this request to #{req.agency.name}?" } do %>
+                            Cancel
+                          <% end %>
+                        <% end %>
+                      </td>
+                    </tr>
+
+                    <%# Candidate sub-rows when submitted %>
+                    <% if req.status_submitted? && req.agency_staffing_candidates.any? %>
+                      <tr>
+                        <td colspan="6" class="pt-0 pb-3 px-4">
+                          <div class="bg-base-100 rounded-box p-3 border border-base-300">
+                            <p class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-2">
+                              Submitted Candidates
+                            </p>
+                            <div class="space-y-2">
+                              <% req.agency_staffing_candidates.each do |candidate| %>
+                                <div class="flex items-center justify-between gap-3 py-1">
+                                  <div class="flex items-center gap-3 min-w-0">
+                                    <span class="font-medium text-sm truncate"><%= candidate.agency_staff_member.name %></span>
+                                    <span class="text-xs text-base-content/50 truncate"><%= candidate.agency_staff_member.email %></span>
+                                    <% if candidate.agency_staff_member.roles.any? %>
+                                      <div class="flex gap-1 flex-wrap">
+                                        <% candidate.agency_staff_member.roles.each do |r| %>
+                                          <span class="badge badge-ghost badge-xs"><%= r.name %></span>
+                                        <% end %>
+                                      </div>
+                                    <% end %>
+                                  </div>
+                                  <div class="flex items-center gap-2 shrink-0">
+                                    <% if candidate.status_submitted? %>
+                                      <%# Reject form with inline reason input %>
+                                      <form data-turbo="false" action="<%= reject_agency_staffing_candidate_path(candidate) %>" method="post" class="flex items-center gap-1">
+                                        <%= hidden_field_tag :_method, :patch %>
+                                        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                                        <input type="text" name="rejection_reason" placeholder="Reason (optional)"
+                                               class="input input-xs input-bordered w-36" />
+                                        <button type="submit" class="btn btn-xs btn-error btn-outline">Reject</button>
+                                      </form>
+                                      <%= button_to accept_agency_staffing_candidate_path(candidate),
+                                          method: :patch,
+                                          class: "btn btn-xs btn-success" do %>
+                                        Accept
+                                      <% end %>
+                                    <% elsif candidate.status_accepted? %>
+                                      <span class="badge badge-success badge-sm">Accepted</span>
+                                    <% elsif candidate.status_rejected? %>
+                                      <span class="badge badge-error badge-sm">Rejected</span>
+                                      <% if candidate.rejection_reason.present? %>
+                                        <span class="text-xs text-base-content/50"><%= candidate.rejection_reason %></span>
+                                      <% end %>
+                                    <% end %>
+                                  </div>
+                                </div>
+                              <% end %>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    <% end %>
+
+                    <%# Declined reason %>
+                    <% if req.status_declined? && req.declined_reason.present? %>
+                      <tr>
+                        <td colspan="6" class="pt-0 pb-2 px-4 text-sm text-base-content/60 italic">
+                          Reason: <%= req.declined_reason %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <p class="text-sm text-base-content/40">No agency requests for this role yet.</p>
+          <% end %>
+
+        </div>
+      </div>
+
+      <%# Send Request modal %>
+      <% unless available.empty? %>
+        <input type="checkbox" id="<%= modal_id %>" class="modal-toggle" />
+        <div class="modal" role="dialog">
+          <div class="modal-box max-w-sm">
+            <h3 class="font-bold text-lg mb-4">Send Staffing Request</h3>
+            <p class="text-sm text-base-content/60 mb-4">
+              Role: <strong><%= role.role_name %></strong> ·
+              <%= role.shift_start&.strftime("%H:%M") %> – <%= role.shift_end&.strftime("%H:%M") %>
+            </p>
+            <%= form_with url: event_agency_staffing_requests_path(event), class: "space-y-4" do |f| %>
+              <%= hidden_field_tag "agency_staffing_request[event_role_id]", role.id %>
+
+              <div class="form-control">
+                <%= label_tag "agency_staffing_request[agency_id]", "Agency", class: "label" %>
+                <%= select_tag "agency_staffing_request[agency_id]",
+                    options_for_select(available.map { |a| [a.name, a.id] }),
+                    class: "select select-bordered w-full",
+                    include_blank: "Select agency…",
+                    required: true %>
+              </div>
+
+              <div class="form-control">
+                <%= label_tag "agency_staffing_request[vacancies_requested]", "Staff Needed", class: "label" %>
+                <%= number_field_tag "agency_staffing_request[vacancies_requested]",
+                    default_vacancies,
+                    min: 1,
+                    class: "input input-bordered w-full",
+                    required: true %>
+              </div>
+
+              <div class="form-control">
+                <%= label_tag "agency_staffing_request[notes]", "Notes (optional)", class: "label" %>
+                <%= text_area_tag "agency_staffing_request[notes]", nil,
+                    class: "textarea textarea-bordered w-full",
+                    rows: 3,
+                    placeholder: "Dress code, specific requirements, etc." %>
+              </div>
+
+              <div class="modal-action">
+                <label for="<%= modal_id %>" class="btn btn-ghost">Cancel</label>
+                <%= f.submit "Send Request", class: "btn btn-primary" %>
+              </div>
+            <% end %>
+          </div>
+          <label class="modal-backdrop" for="<%= modal_id %>"></label>
+        </div>
+      <% end %>
+
+    <% end %>
+  </div>
+<% end %>

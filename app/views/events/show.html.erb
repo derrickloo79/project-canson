@@ -104,9 +104,11 @@
         <div class="space-y-4">
           <% @event.event_roles.each do |role| %>
             <%
-              cnt        = role.confirmed_count
-              vac        = role.vacancies
-              fill_badge = cnt >= vac ? "badge-success" : (cnt > 0 ? "badge-warning" : "badge-neutral")
+              cnt           = role.confirmed_count
+              inhouse_cnt   = role.inhouse_confirmed_count
+              agency_cnt    = role.agency_confirmed_count
+              vac           = role.vacancies
+              fill_badge    = cnt >= vac ? "badge-success" : (cnt > 0 ? "badge-warning" : "badge-neutral")
               confirmed_invitations = role.event_invitations.select(&:status_accepted?)
             %>
             <div class="card bg-base-200 border border-base-200 shadow-sm">
@@ -147,11 +149,11 @@
                     <div class="flex text-sm gap-6">
                       <div class="flex gap-2 items-center">
                         <p class="text-base-content/50 text-xs uppercase tracking-wide">In-House</p>
-                        <p class="font-semibold"><%= cnt %></p>
+                        <p class="font-semibold"><%= inhouse_cnt %></p>
                       </div>
                       <div class="flex gap-2 items-center">
                         <p class="text-base-content/50 text-xs uppercase tracking-wide">Agency</p>
-                        <p class="font-semibold">0</p>
+                        <p class="font-semibold"><%= agency_cnt %></p>
                       </div>
                       <div class="flex gap-2 items-center">
                         <p class="text-base-content/50 text-xs uppercase tracking-wide">External Referral</p>
@@ -215,6 +217,12 @@
               <% end %>
             </div>
           </div>
+        </div>
+
+        <%# Tab 4 — Agencies %>
+        <input type="radio" id="tab-agencies" name="event_tabs" role="tab" class="tab" aria-label="Agencies" />
+        <div role="tabpanel" class="tab-content pt-6">
+          <%= render "events/agencies_tab", event: @event, connected_agencies: @connected_agencies %>
         </div>
       <% end %>
 

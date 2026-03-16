@@ -1,0 +1,32 @@
+<%= form_with url: submit_candidates_agency_incoming_request_path(request), method: :patch, class: "space-y-4" do %>
+  <% if roster.empty? %>
+    <p class="text-sm text-base-content/50">
+      No available staff members in your roster.
+      <%= link_to "Add staff →", agency_staff_members_path, class: "link link-primary" %>
+    </p>
+  <% else %>
+    <div class="space-y-2">
+      <% roster.each do |member| %>
+        <label class="flex items-center gap-3 cursor-pointer hover:bg-base-200 rounded-lg p-2 transition-colors">
+          <%= check_box_tag "agency_staff_member_ids[]", member.id,
+              submitted_ids.include?(member.id),
+              disabled: submitted_ids.include?(member.id),
+              class: "checkbox checkbox-sm" %>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm"><%= member.name %></p>
+            <p class="text-xs text-base-content/50"><%= member.email %></p>
+          </div>
+          <div class="flex gap-1 flex-wrap justify-end">
+            <% member.roles.each do |role| %>
+              <span class="badge badge-neutral badge-xs"><%= role.name %></span>
+            <% end %>
+          </div>
+          <% if submitted_ids.include?(member.id) %>
+            <span class="badge badge-ghost badge-sm shrink-0">Already submitted</span>
+          <% end %>
+        </label>
+      <% end %>
+    </div>
+    <%= submit_tag "Submit Selected Candidates", class: "btn btn-primary btn-sm" %>
+  <% end %>
+<% end %>

@@ -30,7 +30,11 @@ class EventsController < ApplicationController
 
   # GET /events/:id
   def show
-    @event.event_roles.includes(event_invitations: :staff_member).load
+    @event.event_roles.includes(
+      event_invitations: :staff_member,
+      agency_staffing_requests: { agency_staffing_candidates: :agency_staff_member }
+    ).load
+    @connected_agencies = AgencyConnection.status_active.includes(:agency).map(&:agency)
   end
 
   # GET /events/:id/step1
