@@ -1,0 +1,49 @@
+<% content_for :title, "Agency Dashboard — FlexiLabour" %>
+
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-2xl font-bold mb-6"><%= current_user.agency.name %></h1>
+
+  <%# Connection status card %>
+  <div class="card bg-base-200 border border-base-200 shadow-sm mb-6">
+    <div class="card-body">
+      <div class="flex items-center justify-between">
+        <h2 class="card-title text-base">Hotel Connection</h2>
+        <% if @connection %>
+          <% if @connection.status_active? %>
+            <span class="badge badge-success">Active</span>
+          <% elsif @connection.status_pending? %>
+            <span class="badge badge-warning">Pending Confirmation</span>
+          <% elsif @connection.status_suspended? %>
+            <span class="badge badge-error">Suspended</span>
+          <% end %>
+        <% else %>
+          <span class="badge badge-ghost">No Connection</span>
+        <% end %>
+      </div>
+
+      <% if @connection&.status_pending? %>
+        <p class="text-sm text-base-content/60 mt-1">
+          The hotel has linked your agency. Please confirm the connection to start receiving staffing requests.
+        </p>
+        <% if current_user.role_agency_admin? %>
+          <div class="mt-4">
+            <%= button_to "Confirm Connection", confirm_agency_dashboard_path, method: :patch,
+                class: "btn btn-primary btn-sm",
+                data: { turbo_confirm: "Confirm your agency's connection with the hotel?" } %>
+          </div>
+        <% end %>
+      <% elsif @connection&.status_active? %>
+        <p class="text-sm text-base-content/60 mt-1">
+          Your agency is connected and ready to receive staffing requests.
+          <% if @connection.confirmed_at %>
+            Connected <%= @connection.confirmed_at.strftime("%-d %b %Y") %>.
+          <% end %>
+        </p>
+      <% elsif @connection&.status_suspended? %>
+        <p class="text-sm text-base-content/60 mt-1">
+          This connection has been suspended. Please contact the hotel for more information.
+        </p>
+      <% end %>
+    </div>
+  </div>
+</div>

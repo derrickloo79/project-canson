@@ -7,7 +7,9 @@
       "Bash(bin/rails generate migration CreateEventInvitations)",
       "Bash(bin/rails db:migrate)",
       "Bash(bin/rubocop -f github)",
-      "Bash(xxd)"
+      "Bash(xxd)",
+      "Bash(bin/rails runner \"Agency; AgencyConnection; puts ''Models OK''\")",
+      "Bash(bin/rails runner \":*)"
     ],
     "additionalDirectories": [
       "/Users/derrick.loo-admin/Documents/flexi_labour/app/views",

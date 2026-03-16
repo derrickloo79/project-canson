@@ -1,0 +1,53 @@
+<% content_for :title, "Register Agency — FlexiLabour" %>
+
+<div class="min-h-[70vh] flex items-center justify-center">
+  <div class="card bg-base-200 shadow-md w-full max-w-sm">
+    <div class="card-body">
+      <div class="text-center mb-4">
+        <h2 class="card-title text-2xl justify-center mb-1">Register Agency</h2>
+        <p class="text-sm text-base-content/60">
+          You're registering as the administrator for
+          <span class="font-semibold text-base-content"><%= @agency.name %></span>.
+        </p>
+      </div>
+
+      <% if @user&.errors&.any? %>
+        <div role="alert" class="alert alert-error mb-2">
+          <ul class="list-disc list-inside text-sm">
+            <% @user.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= form_with model: @user, url: agency_signup_path(token: @agency.invitation_token) do |f| %>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Your Name</legend>
+          <%= f.text_field :name, class: "input w-full", placeholder: "Full name", required: true,
+              value: @user&.name %>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Email</legend>
+          <%= f.email_field :email, class: "input w-full", placeholder: "admin@agency.com",
+              autocomplete: "email", required: true, value: @user&.email %>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Password</legend>
+          <%= f.password_field :password, class: "input w-full", placeholder: "••••••••",
+              autocomplete: "new-password", required: true %>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Confirm Password</legend>
+          <%= f.password_field :password_confirmation, class: "input w-full", placeholder: "••••••••",
+              autocomplete: "new-password", required: true %>
+        </fieldset>
+
+        <%= f.submit "Create Account", class: "btn btn-primary w-full mt-2" %>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -4,36 +4,30 @@
   <div class="card bg-base-200 shadow-md w-full max-w-sm">
     <div class="card-body">
       <h2 class="card-title text-2xl justify-center mb-1">Sign In</h2>
-      <p class="text-center text-base-content/60 text-sm mb-4">FlexiLabour Staff Management</p>
+      <p class="text-center text-base-content/60 text-sm mb-2">FlexiLabour Staff Management</p>
 
       <%= form_for(resource, as: resource_name,
-          url: session_path(resource_name),
-          html: { class: "space-y-4" }) do |f| %>
+          url: session_path(resource_name)) do |f| %>
 
-        <div class="form-control">
-          <%= f.label :email, class: "label" %>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Email</legend>
           <%= f.email_field :email, autofocus: true, autocomplete: "email",
-              class: "input input-bordered w-full" %>
-        </div>
+              class: "input w-full", placeholder: "email@example.com" %>
+        </fieldset>
 
-        <div class="form-control">
-          <%= f.label :password, class: "label" %>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Password</legend>
           <%= f.password_field :password, autocomplete: "current-password",
-              class: "input input-bordered w-full" %>
-        </div>
-
-        <% if devise_mapping.rememberable? %>
-          <div class="form-control">
-            <label class="label cursor-pointer justify-start gap-3">
+              class: "input w-full", placeholder: "••••••••" %>
+          <% if devise_mapping.rememberable? %>
+            <label class="fieldset-label mt-1">
               <%= f.check_box :remember_me, class: "checkbox checkbox-sm" %>
-              <span class="label-text">Remember me</span>
+              Remember me
             </label>
-          </div>
-        <% end %>
+          <% end %>
+        </fieldset>
 
-        <div class="form-control mt-2">
-          <%= f.submit "Sign In", class: "btn btn-primary w-full" %>
-        </div>
+        <%= f.submit "Sign In", class: "btn btn-primary w-full mt-2" %>
       <% end %>
 
       <div class="divider text-xs text-base-content/40">or</div>

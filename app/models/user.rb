@@ -16,10 +16,15 @@ class User < ApplicationRecord
 
   has_many :events, foreign_key: :user_id, dependent: :destroy
   has_one :staff_member
+  belongs_to :agency, optional: true
 
   validates :name, presence: true
 
   def self_approver?
     approving_manager_id.present? && approving_manager_id == id
+  end
+
+  def agency_user?
+    role_agency_admin? || role_agency_manager?
   end
 end

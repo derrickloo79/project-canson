@@ -1,0 +1,50 @@
+<% content_for :title, "Agencies — FlexiLabour" %>
+
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">Agencies</h1>
+  <%= link_to "Invite Agency", new_agency_path, class: "btn btn-primary" %>
+</div>
+
+<% if @agencies.empty? %>
+  <div class="text-center py-16 text-base-content/50">
+    <p class="text-lg">No agencies yet.</p>
+    <p class="mt-1">Invite an agency to get started.</p>
+  </div>
+<% else %>
+  <div class="card bg-base-100 border border-base-200 shadow-sm overflow-x-auto">
+    <table class="table table-zebra w-full">
+      <thead>
+        <tr>
+          <th>Agency</th>
+          <th>Contact Email</th>
+          <th>Invited By</th>
+          <th>Invited</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @agencies.each do |agency| %>
+          <tr>
+            <td class="font-medium"><%= agency.name %></td>
+            <td class="text-sm text-base-content/70"><%= mail_to agency.contact_email, agency.contact_email %></td>
+            <td class="text-sm text-base-content/70"><%= agency.invited_by.name %></td>
+            <td class="text-sm text-base-content/60"><%= agency.invitation_sent_at&.strftime("%-d %b %Y") || "—" %></td>
+            <td>
+              <% if !agency.registered? %>
+                <span class="badge badge-warning badge-sm">Pending Registration</span>
+              <% elsif agency.agency_connection&.status_pending? %>
+                <span class="badge badge-info badge-sm">Awaiting Confirmation</span>
+              <% elsif agency.agency_connection&.status_active? %>
+                <span class="badge badge-success badge-sm">Active</span>
+              <% elsif agency.agency_connection&.status_suspended? %>
+                <span class="badge badge-error badge-sm">Suspended</span>
+              <% else %>
+                <span class="badge badge-ghost badge-sm">—</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

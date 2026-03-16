@@ -10,7 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_13_053409) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_16_000003) do
+  create_table "agencies", force: :cascade do |t|
+    t.string "contact_email", null: false
+    t.datetime "created_at", null: false
+    t.datetime "invitation_accepted_at"
+    t.datetime "invitation_sent_at"
+    t.string "invitation_token", null: false
+    t.integer "invited_by_id", null: false
+    t.string "name", null: false
+    t.string "phone"
+    t.datetime "updated_at", null: false
+    t.string "website"
+    t.index ["contact_email"], name: "index_agencies_on_contact_email", unique: true
+    t.index ["invitation_token"], name: "index_agencies_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_agencies_on_invited_by_id"
+  end
+
+  create_table "agency_connections", force: :cascade do |t|
+    t.integer "agency_id", null: false
+    t.datetime "confirmed_at"
+    t.integer "confirmed_by_id"
+    t.datetime "created_at", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["agency_id"], name: "index_agency_connections_on_agency_id"
+    t.index ["agency_id"], name: "index_agency_connections_on_agency_id_unique", unique: true
+    t.index ["confirmed_by_id"], name: "index_agency_connections_on_confirmed_by_id"
+  end
+
   create_table "event_invitations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "event_role_id", null: false
@@ -95,6 +123,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_053409) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.integer "agency_id"
     t.integer "approving_manager_id"
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
@@ -105,10 +134,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_053409) do
     t.string "reset_password_token"
     t.integer "role", default: 2, null: false
     t.datetime "updated_at", null: false
+    t.index ["agency_id"], name: "index_users_on_agency_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "agencies", "users", column: "invited_by_id"
+  add_foreign_key "agency_connections", "agencies"
+  add_foreign_key "agency_connections", "users", column: "confirmed_by_id"
   add_foreign_key "event_invitations", "event_roles"
   add_foreign_key "event_invitations", "staff_members"
   add_foreign_key "event_roles", "events"
@@ -117,5 +150,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_053409) do
   add_foreign_key "staff_member_roles", "staff_members"
   add_foreign_key "staff_members", "users"
   add_foreign_key "staff_members", "users", column: "blacklisted_by_id"
+  add_foreign_key "users", "agencies"
   add_foreign_key "users", "users", column: "approving_manager_id"
 end

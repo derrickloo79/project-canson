@@ -44,5 +44,17 @@ Rails.application.routes.draw do
     end
   end
 
+  # Admin: agency management
+  resources :agencies, only: %i[index new create]
+
+  # Public: agency registration via token
+  get  "/agency_signup/:token", to: "agency_registrations#new",    as: :agency_signup
+  post "/agency_signup/:token", to: "agency_registrations#create"
+
+  # Agency admin dashboard + connection confirmation
+  resource :agency_dashboard, controller: "agency_dashboard", only: :show do
+    patch :confirm, on: :member
+  end
+
   root to: "pages#home"
 end

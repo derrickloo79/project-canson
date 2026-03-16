@@ -33,6 +33,9 @@
                 <span class="badge badge-warning badge-xs"><%= pending_count %></span>
               <% end %>
             </div>
+          <% elsif current_user.agency_user? %>
+            <%# Agency admins and managers %>
+            <%= link_to "Dashboard", agency_dashboard_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
           <% else %>
             <%# Ops managers, approving managers, admins %>
             <%= link_to "Events", events_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
@@ -46,6 +49,9 @@
                 <% end %>
               </div>
               <%= link_to "Roles", roles_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
+            <% end %>
+            <% if current_user.role_system_admin? %>
+              <%= link_to "Agencies", agencies_path, class: "text-sm text-base-content/70 hover:text-base-content transition-colors" %>
             <% end %>
           <% end %>
         <% end %>

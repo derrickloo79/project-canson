@@ -1,0 +1,20 @@
+<h1>You've been invited to FlexiLabour</h1>
+
+<p><%= @invited_by_name %> has invited <strong><%= @agency.name %></strong> to join FlexiLabour, a flexible staff management platform.</p>
+
+<p>Click the link below to register your agency account:</p>
+
+<p>
+  <a href="<%= @registration_url %>" style="display:inline-block;padding:10px 20px;background:#570df8;color:#fff;text-decoration:none;border-radius:6px;">
+    Register Your Agency
+  </a>
+</p>
+
+<p>Or copy this link into your browser:</p>
+<p><%= @registration_url %></p>
+
+<hr>
+
+<p style="color:#888;font-size:12px;">
+  This invitation was sent on behalf of <%= @invited_by_name %>. If you were not expecting this invitation, you can ignore this email.
+</p>
