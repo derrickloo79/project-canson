@@ -9,7 +9,9 @@
       "Bash(bin/rubocop -f github)",
       "Bash(xxd)",
       "Bash(bin/rails runner \"Agency; AgencyConnection; puts ''Models OK''\")",
-      "Bash(bin/rails runner \":*)"
+      "Bash(bin/rails runner \":*)",
+      "Bash(bin/rails generate migration CreateAgencyStaffMembers agency:references name:string email:string mobile:string gender:integer active:boolean)",
+      "Bash(bin/rails generate migration CreateAgencyStaffMemberRoles agency_staff_member:references role:references)"
     ],
     "additionalDirectories": [
       "/Users/derrick.loo-admin/Documents/flexi_labour/app/views",

@@ -1,0 +1,94 @@
+<%= form_with model: staff_member, class: "space-y-5" do |f| %>
+  <% if staff_member.errors.any? %>
+    <div role="alert" class="alert alert-error">
+      <ul class="list-disc list-inside text-sm">
+        <% staff_member.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <%# Full Name %>
+    <div class="form-control">
+      <%= f.label :name, "Full Name", class: "label" %>
+      <%= f.text_field :name,
+          class: field_class(staff_member, :name, "input input-bordered w-full"),
+          placeholder: "Jane Smith",
+          required: true %>
+      <% if staff_member.errors[:name].any? %>
+        <p class="text-error text-xs mt-1"><%= staff_member.errors[:name].first %></p>
+      <% end %>
+    </div>
+
+    <%# Email %>
+    <div class="form-control">
+      <%= f.label :email, class: "label" %>
+      <%= f.email_field :email,
+          class: field_class(staff_member, :email, "input input-bordered w-full"),
+          placeholder: "jane@example.com",
+          required: true %>
+      <% if staff_member.errors[:email].any? %>
+        <p class="text-error text-xs mt-1"><%= staff_member.errors[:email].first %></p>
+      <% end %>
+    </div>
+
+    <%# Mobile %>
+    <div class="form-control">
+      <%= f.label :mobile, class: "label" %>
+      <%= f.telephone_field :mobile,
+          class: field_class(staff_member, :mobile, "input input-bordered w-full"),
+          placeholder: "+65 9123 4567" %>
+    </div>
+
+    <%# Gender %>
+    <div class="form-control">
+      <%= f.label :gender, class: "label" %>
+      <%= f.select :gender,
+          AgencyStaffMember.genders.keys.map { |g| [g.humanize.gsub("_", " ").capitalize, g] },
+          { include_blank: "Prefer not to say" },
+          class: field_class(staff_member, :gender, "select select-bordered w-full") %>
+    </div>
+  </div>
+
+  <%# Active status (only shown when editing) %>
+  <% unless staff_member.new_record? %>
+    <div class="form-control">
+      <label class="flex items-center gap-3 cursor-pointer w-fit">
+        <%= f.check_box :active, class: "toggle toggle-success" %>
+        <span class="label-text">Active (available for staffing requests)</span>
+      </label>
+    </div>
+  <% end %>
+
+  <%# Roles (multi-select checkboxes) %>
+  <div class="form-control">
+    <span class="label-text font-medium mb-2 block">Roles</span>
+    <% if Role.active.ordered.any? %>
+      <div class="flex flex-wrap gap-3">
+        <% Role.active.ordered.each do |role| %>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <%= check_box_tag "agency_staff_member[role_ids][]", role.id,
+                staff_member.role_ids.include?(role.id),
+                id: "role_#{role.id}",
+                class: "checkbox checkbox-sm" %>
+            <span class="text-sm"><%= role.name %></span>
+          </label>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-sm text-base-content/50">No active roles available.</p>
+    <% end %>
+    <%# Hidden field so empty selection clears existing roles %>
+    <%= hidden_field_tag "agency_staff_member[role_ids][]", "" %>
+  </div>
+
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit(staff_member.new_record? ? "Add Staff Member" : "Save Changes", class: "btn btn-primary") %>
+    <% if staff_member.new_record? %>
+      <%= f.submit "Save & Add Another", name: "add_another", class: "btn btn-outline" %>
+    <% end %>
+    <%= link_to "Cancel", agency_staff_members_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

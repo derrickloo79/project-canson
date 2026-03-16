@@ -2,6 +2,7 @@ class Agency < ApplicationRecord
   belongs_to :invited_by, class_name: "User"
   has_one    :agency_connection, dependent: :destroy
   has_many   :users, dependent: :nullify
+  has_many   :agency_staff_members, dependent: :destroy
 
   validates :name,            presence: true
   validates :contact_email,   presence: true,

@@ -46,4 +46,20 @@
       <% end %>
     </div>
   </div>
+
+  <%# Staff Roster card %>
+  <div class="card bg-base-100 border border-base-200 shadow-sm">
+    <div class="card-body">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="card-title text-base">Staff Roster</h2>
+          <% staff_count = current_user.agency.agency_staff_members.count %>
+          <p class="text-sm text-base-content/60 mt-0.5">
+            <%= staff_count == 0 ? "No staff members yet" : "#{staff_count} staff #{"member".pluralize(staff_count)}" %>
+          </p>
+        </div>
+        <%= link_to "Manage Roster", agency_staff_members_path, class: "btn btn-sm btn-outline" %>
+      </div>
+    </div>
+  </div>
 </div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_16_000003) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_16_095113) do
   create_table "agencies", force: :cascade do |t|
     t.string "contact_email", null: false
     t.datetime "created_at", null: false
@@ -37,6 +37,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_16_000003) do
     t.index ["agency_id"], name: "index_agency_connections_on_agency_id"
     t.index ["agency_id"], name: "index_agency_connections_on_agency_id_unique", unique: true
     t.index ["confirmed_by_id"], name: "index_agency_connections_on_confirmed_by_id"
+  end
+
+  create_table "agency_staff_member_roles", force: :cascade do |t|
+    t.integer "agency_staff_member_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "role_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agency_staff_member_id", "role_id"], name: "idx_on_agency_staff_member_id_role_id_befb0fc7b6", unique: true
+    t.index ["agency_staff_member_id"], name: "index_agency_staff_member_roles_on_agency_staff_member_id"
+    t.index ["role_id"], name: "index_agency_staff_member_roles_on_role_id"
+  end
+
+  create_table "agency_staff_members", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.integer "agency_id", null: false
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.integer "gender"
+    t.string "mobile"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agency_id", "email"], name: "index_agency_staff_members_on_agency_id_and_email", unique: true
+    t.index ["agency_id"], name: "index_agency_staff_members_on_agency_id"
   end
 
   create_table "event_invitations", force: :cascade do |t|
@@ -142,6 +165,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_16_000003) do
   add_foreign_key "agencies", "users", column: "invited_by_id"
   add_foreign_key "agency_connections", "agencies"
   add_foreign_key "agency_connections", "users", column: "confirmed_by_id"
+  add_foreign_key "agency_staff_member_roles", "agency_staff_members"
+  add_foreign_key "agency_staff_member_roles", "roles"
+  add_foreign_key "agency_staff_members", "agencies"
   add_foreign_key "event_invitations", "event_roles"
   add_foreign_key "event_invitations", "staff_members"
   add_foreign_key "event_roles", "events"

@@ -56,5 +56,8 @@ Rails.application.routes.draw do
     patch :confirm, on: :member
   end
 
+  # Agency staff roster
+  resources :agency_staff_members
+
   root to: "pages#home"
 end
