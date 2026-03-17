@@ -11,6 +11,7 @@
 .badge-success { @apply bg-green-50 text-green-700 inset-ring inset-ring-green-600/20; }
 
 .alert { box-shadow: none; }
-.alert-info { @apply bg-blue-50 border-blue-50 text-blue-600; }
-.alert-error { @apply bg-red-50 border-red-50 text-red-600; }
 .alert-warning { @apply bg-yellow-50 border-yellow-50 text-yellow-600; }
+.alert-error { @apply bg-red-50 border-red-50 text-red-600; }
+.alert-info { @apply bg-blue-50 border-blue-50 text-blue-600; }
+.alert-success { @apply bg-green-50 border-green-50 text-green-600; }
