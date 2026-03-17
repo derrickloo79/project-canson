@@ -1,10 +1,1 @@
-<%
-  badge_class = case gender
-                when "male"       then "badge-info"
-                when "female"     then "badge-error"
-                when "non_binary" then "badge-warning"
-                else                   "badge-neutral"
-                end
-  label = gender&.humanize&.gsub("_", " ") || "—"
-%>
-<span class="badge badge-sm <%= badge_class %>"><%= label %></span>
+<span class="text-sm text-base-content/70"><%= gender&.humanize&.gsub("_", " ") || "—" %></span>
