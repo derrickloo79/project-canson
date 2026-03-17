@@ -13,7 +13,13 @@
       "Bash(bin/rails generate migration CreateAgencyStaffMembers agency:references name:string email:string mobile:string gender:integer active:boolean)",
       "Bash(bin/rails generate migration CreateAgencyStaffMemberRoles agency_staff_member:references role:references)",
       "Bash(bin/rails generate migration CreateAgencyStaffingRequests event_role:references agency:references requested_by:references vacancies_requested:integer notes:text status:integer declined_at:datetime declined_reason:text submitted_at:datetime)",
-      "Bash(bin/rails generate migration CreateAgencyStaffingCandidates agency_staffing_request:references agency_staff_member:references status:integer accepted_at:datetime rejected_at:datetime rejection_reason:text)"
+      "Bash(bin/rails generate migration CreateAgencyStaffingCandidates agency_staffing_request:references agency_staff_member:references status:integer accepted_at:datetime rejected_at:datetime rejection_reason:text)",
+      "Bash(for f in app/models/agency_staffing_request.rb app/models/agency_staffing_candidate.rb app/controllers/agency_staffing_requests_controller.rb app/controllers/agency_staffing_candidates_controller.rb app/controllers/agency_incoming_requests_controller.rb app/models/agency_staff_member.rb app/models/agency_staff_member_role.rb db/migrate/20260316095112_create_agency_staff_members.rb db/migrate/20260316095113_create_agency_staff_member_roles.rb db/migrate/20260316102438_create_agency_staffing_requests.rb db/migrate/20260316102439_create_agency_staffing_candidates.rb)",
+      "Bash(do tail -c1 \"$f\")",
+      "Bash(echo \"MISSING: $f\")",
+      "Bash(done)",
+      "Bash(for f in app/models/agency_staffing_request.rb app/models/agency_staffing_candidate.rb app/controllers/agency_staffing_requests_controller.rb app/controllers/agency_staffing_candidates_controller.rb app/controllers/agency_incoming_requests_controller.rb app/models/agency_staff_member.rb app/models/agency_staff_member_role.rb)",
+      "Bash(echo \"STILL MISSING: $f\")"
     ],
     "additionalDirectories": [
       "/Users/derrick.loo-admin/Documents/flexi_labour/app/views",
