@@ -1,35 +1,49 @@
 <%# Shared dl rows for event basics (excludes event name, date, and venue).
     Rendered inside an existing <dl class="grid grid-cols-4 ..."> in step3 and show. %>
 
-<dt class="text-base-content/60">Event Type</dt>
-<dd class="col-span-3"><%= event.event_type&.humanize %></dd>
+<div class="col-span-2 flex flex-col gap-1">
+  <dt class="text-base-content/60">Event Type</dt>
+  <dd class="font-semibold"><%= event.event_type&.humanize %></dd>
+</div>
 
-<dt class="text-base-content/60">Reference No.</dt>
-<dd class="col-span-3"><%= event.reference_number.presence || "—" %></dd>
+<div class="col-span-2 flex flex-col gap-1">
+  <dt class="text-base-content/60">Reference No.</dt>
+  <dd class="font-semibold"><%= event.reference_number.presence || "—" %></dd>
+</div>
 
-<dt class="text-base-content/60">Setup Time</dt>
-<dd class="col-span-3"><%= event.setup_time&.strftime("%H:%M") || "—" %></dd>
+<div class="col-span-1 flex flex-col gap-1">
+  <dt class="text-base-content/60">Setup Time</dt>
+  <dd class="font-semibold"><%= event.setup_time&.strftime("%H:%M") || "—" %></dd>
+</div>
 
-<dt class="text-base-content/60">Event Start</dt>
-<dd class="col-span-3"><%= event.event_start_time&.strftime("%H:%M") %></dd>
+<div class="col-span-1 flex flex-col gap-1">
+  <dt class="text-base-content/60">Event Start</dt>
+  <dd class="font-semibold"><%= event.event_start_time&.strftime("%H:%M") %></dd>
+</div>
 
-<dt class="text-base-content/60">Event End</dt>
-<dd class="col-span-3 flex items-center gap-1">
-  <%= event.event_end_time&.strftime("%H:%M") %>
-  <% if event.end_time_next_day? %>
-    <span class="badge badge-warning badge-sm ml-1">+1</span>
+<div class="col-span-1 flex flex-col gap-1">
+  <dt class="text-base-content/60">Event End</dt>
+  <dd class="font-semibold flex items-center gap-1">
+    <%= event.event_end_time&.strftime("%H:%M") %>
+    <% if event.end_time_next_day? %>
+      <span class="badge badge-warning badge-sm ml-1">+1</span>
+    <% end %>
+  </dd>
+</div>
+
+<div class="col-span-1 flex flex-col gap-1">
+  <dt class="text-base-content/60">Teardown Time</dt>
+  <dd class="font-semibold flex items-center gap-1">
+    <%= event.teardown_time&.strftime("%H:%M") || "—" %>
+    <% if event.teardown_next_day? %>
+      <span class="badge badge-warning badge-sm ml-1">+1</span>
+    <% end %>
+  </dd>
+</div>
+
+<div class="col-span-4 flex flex-col gap-1">
+  <% if event.description.present? %>
+    <dt class="text-base-content/60">Description</dt>
+    <dd class="font-semibold"><%= event.description %></dd>
   <% end %>
-</dd>
-
-<dt class="text-base-content/60">Teardown Time</dt>
-<dd class="col-span-3 flex items-center gap-1">
-  <%= event.teardown_time&.strftime("%H:%M") || "—" %>
-  <% if event.teardown_next_day? %>
-    <span class="badge badge-warning badge-sm ml-1">+1</span>
-  <% end %>
-</dd>
-
-<% if event.description.present? %>
-  <dt class="text-base-content/60">Description</dt>
-  <dd class="col-span-3"><%= event.description %></dd>
-<% end %>
+</div>

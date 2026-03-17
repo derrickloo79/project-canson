@@ -19,7 +19,11 @@
       "Bash(echo \"MISSING: $f\")",
       "Bash(done)",
       "Bash(for f in app/models/agency_staffing_request.rb app/models/agency_staffing_candidate.rb app/controllers/agency_staffing_requests_controller.rb app/controllers/agency_staffing_candidates_controller.rb app/controllers/agency_incoming_requests_controller.rb app/models/agency_staff_member.rb app/models/agency_staff_member_role.rb)",
-      "Bash(echo \"STILL MISSING: $f\")"
+      "Bash(echo \"STILL MISSING: $f\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:3000/users/sign_in)",
+      "Bash(curl -s http://127.0.0.1:3000/users/sign_in)",
+      "Bash(curl -s http://127.0.0.1:3000/assets/application-8b441ae0.css)",
+      "Bash(curl -s http://127.0.0.1:3000/assets/tailwind-2d141bbd.css)"
     ],
     "additionalDirectories": [
       "/Users/derrick.loo-admin/Documents/flexi_labour/app/views",
