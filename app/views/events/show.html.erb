@@ -128,7 +128,7 @@
                       </svg>
                       <%= role.shift_start&.strftime("%H:%M") %> – <%= role.shift_end&.strftime("%H:%M") %>
                       <% if role.shift_end_next_day? %>
-                        <span class="badge badge-warning badge-xs">+1</span>
+                        <span class="badge badge-warning badge-sm">+1</span>
                       <% end %>
                     </span>
                     <span class="flex items-center gap-1.5 text-sm text-base-content/60">
@@ -170,11 +170,11 @@
                 </div>
                 <%# Confirmed staff table %>
                 <% if confirmed_invitations.any? || accepted_agency_candidates.any? %>
-                  <div class="overflow-x-auto mt-1">
+                  <div class="bg-base-100 rounded-box overflow-x-auto mt-1">
                     <table class="table w-full" data-controller="table-sort">
                       <thead>
                         <tr>
-                          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Full Name</th>
+                          <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Name</th>
                           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Email</th>
                           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Mobile</th>
                           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Gender</th>
@@ -227,7 +227,7 @@
         <div role="tabpanel" class="tab-content pt-6">
           <div class="card bg-base-200 shadow-sm">
             <div class="card-body">
-              <h2 class="card-title">In-House Staff</h2>
+              <%# <h2 class="card-title">In-House Staff</h2> %>
               <% @event.event_roles.each do |role| %>
                 <%= render "events/staff_role_panel", role: role %>
               <% end %>

@@ -10,11 +10,12 @@
      data-controller="invite-modal">
 
   <%# Role heading row: name + confirmed/vacancies + Invite button %>
-  <div class="flex items-center justify-between mb-2">
-    <h3 class="font-semibold text-sm">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="font-bold text-base flex items-center gap-2">
       <%= role.role_name %>
-      <span class="font-normal text-base-content/60">
-        (<%= role.confirmed_count %> / <%= role.vacancies %> <%= "vacancy".pluralize(role.vacancies) %> filled)
+      <% cnt = role.confirmed_count; vac = role.vacancies %>
+      <span class="badge <%= cnt >= vac ? "badge-success" : (cnt > 0 ? "badge-warning" : "badge-neutral") %> badge-sm whitespace-nowrap font-normal">
+        <%= cnt %> / <%= vac %> Filled
       </span>
     </h3>
     <% if eligible.any? %>
@@ -29,8 +30,8 @@
                      .sort_by { |inv| status_order.fetch(inv.status, 99) }
   %>
   <% if invitations.any? %>
-    <div class="overflow-x-auto mt-2">
-      <table class="table table-sm w-full" data-controller="table-sort">
+    <div class="bg-base-100 rounded-box overflow-x-auto mt-2">
+      <table class="table w-full" data-controller="table-sort">
         <thead>
           <tr>
             <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Name</th>
