@@ -104,47 +104,55 @@
                             <p class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-2">
                               Submitted Candidates
                             </p>
-                            <div class="space-y-2">
-                              <% req.agency_staffing_candidates.each do |candidate| %>
-                                <div class="flex items-center justify-between gap-3 py-1">
-                                  <div class="flex items-center gap-3 min-w-0">
-                                    <span class="font-medium text-sm truncate"><%= candidate.agency_staff_member.name %></span>
-                                    <span class="text-xs text-base-content/50 truncate"><%= candidate.agency_staff_member.email %></span>
-                                    <% if candidate.agency_staff_member.roles.any? %>
-                                      <div class="flex gap-1 flex-wrap">
-                                        <% candidate.agency_staff_member.roles.each do |r| %>
-                                          <span class="badge badge-ghost badge-xs"><%= r.name %></span>
-                                        <% end %>
-                                      </div>
-                                    <% end %>
-                                  </div>
-                                  <div class="flex items-center gap-2 shrink-0">
-                                    <% if candidate.status_submitted? %>
-                                      <%# Reject form with inline reason input %>
-                                      <form data-turbo="false" action="<%= reject_agency_staffing_candidate_path(candidate) %>" method="post" class="flex items-center gap-1">
-                                        <%= hidden_field_tag :_method, :patch %>
-                                        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-                                        <input type="text" name="rejection_reason" placeholder="Reason (optional)"
-                                               class="input input-xs input-bordered w-36" />
-                                        <button type="submit" class="btn btn-xs btn-error btn-outline">Reject</button>
-                                      </form>
-                                      <%= button_to accept_agency_staffing_candidate_path(candidate),
-                                          method: :patch,
-                                          class: "btn btn-xs btn-success" do %>
-                                        Accept
+                            <table class="table table-sm w-full">
+                              <thead>
+                                <tr>
+                                  <th class="w-1/5">Name</th>
+                                  <th class="w-1/5">Email</th>
+                                  <th class="w-1/5">Mobile</th>
+                                  <th class="w-1/5">Gender</th>
+                                  <th class="w-1/5">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <% req.agency_staffing_candidates.each do |candidate| %>
+                                  <% m = candidate.agency_staff_member %>
+                                  <tr>
+                                    <td class="font-medium text-sm"><%= m.name %></td>
+                                    <td class="text-sm text-base-content/60"><%= m.email %></td>
+                                    <td class="text-sm text-base-content/60"><%= m.mobile.presence || "—" %></td>
+                                    <td><%= render "gender_badge", gender: m.gender %></td>
+                                    <td>
+                                      <% if candidate.status_submitted? %>
+                                        <div class="flex items-center gap-1 flex-wrap">
+                                          <form data-turbo="false" action="<%= reject_agency_staffing_candidate_path(candidate) %>" method="post" class="flex items-center gap-1">
+                                            <%= hidden_field_tag :_method, :patch %>
+                                            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                                            <input type="text" name="rejection_reason" placeholder="Reason (optional)"
+                                                   class="input input-xs input-bordered w-32" />
+                                            <button type="submit" class="btn btn-xs btn-error btn-outline">Reject</button>
+                                          </form>
+                                          <%= button_to accept_agency_staffing_candidate_path(candidate),
+                                              method: :patch,
+                                              class: "btn btn-xs btn-success" do %>
+                                            Accept
+                                          <% end %>
+                                        </div>
+                                      <% elsif candidate.status_accepted? %>
+                                        <span class="badge badge-success badge-sm">Accepted</span>
+                                      <% elsif candidate.status_rejected? %>
+                                        <div class="flex items-center gap-1.5">
+                                          <span class="badge badge-error badge-sm">Rejected</span>
+                                          <% if candidate.rejection_reason.present? %>
+                                            <span class="text-xs text-base-content/50"><%= candidate.rejection_reason %></span>
+                                          <% end %>
+                                        </div>
                                       <% end %>
-                                    <% elsif candidate.status_accepted? %>
-                                      <span class="badge badge-success badge-sm">Accepted</span>
-                                    <% elsif candidate.status_rejected? %>
-                                      <span class="badge badge-error badge-sm">Rejected</span>
-                                      <% if candidate.rejection_reason.present? %>
-                                        <span class="text-xs text-base-content/50"><%= candidate.rejection_reason %></span>
-                                      <% end %>
-                                    <% end %>
-                                  </div>
-                                </div>
-                              <% end %>
-                            </div>
+                                    </td>
+                                  </tr>
+                                <% end %>
+                              </tbody>
+                            </table>
                           </div>
                         </td>
                       </tr>
