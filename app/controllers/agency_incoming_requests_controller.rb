@@ -11,7 +11,9 @@ class AgencyIncomingRequestsController < ApplicationController
   end
 
   def show
+    role_name = @request.event_role.role_name
     @roster = @agency.agency_staff_members.active.ordered.includes(:roles)
+                     .select { |m| m.roles.any? { |r| r.name.casecmp?(role_name) } }
     @submitted_ids = @request.agency_staffing_candidates.pluck(:agency_staff_member_id)
   end
 

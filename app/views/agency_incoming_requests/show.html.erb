@@ -5,7 +5,7 @@
   role  = @request.event_role
 %>
 
-<div class="max-w-2xl mx-auto">
+<div class="max-w-4xl mx-auto">
   <div class="flex items-center gap-3 mb-6">
     <%= link_to agency_incoming_requests_path, class: "btn btn-ghost btn-sm btn-square" do %>
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -20,10 +20,25 @@
     <div class="card-body">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <h2 class="font-bold text-lg"><%= event.event_name %></h2>
-          <p class="text-sm text-base-content/60 mt-0.5">
-            <%= event.event_date&.strftime("%-d %b %Y") %> · <%= event.venue %>
-          </p>
+          <h2 class="font-bold text-lg"><%= role.role_name %> <span class="font-normal">for</span> <%= event.event_name %></h2>
+          <div class="flex items-center flex-wrap gap-x-3 gap-y-1 mt-1 text-base-content/60 text-sm">
+            <span class="flex items-center gap-1.5 whitespace-nowrap">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <%= event.event_date&.strftime("%a, %-d %b %Y") %>
+            </span>
+            <span class="flex items-center gap-1.5 whitespace-nowrap">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <%= event.venue %>
+            </span>
+          </div>
         </div>
         <% case @request.status
            when "pending" %>
@@ -37,27 +52,24 @@
         <% end %>
       </div>
 
-      <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mt-3">
-        <dt class="text-base-content/50">Role</dt>
-        <dd class="font-medium"><%= role.role_name %></dd>
-
-        <dt class="text-base-content/50">Shift</dt>
-        <dd>
+      <dl class="grid grid-cols-4 gap-x-4 gap-y-2 text-sm mt-3">
+        <dt class="text-base-content/60">Shift</dt>
+        <dd class="col-span-3 flex items-center gap-1">
           <%= role.shift_start&.strftime("%H:%M") %> – <%= role.shift_end&.strftime("%H:%M") %>
           <% if role.shift_end_next_day? %>
             <span class="badge badge-warning badge-xs ml-1">+1</span>
           <% end %>
         </dd>
 
-        <dt class="text-base-content/50">Staff Needed</dt>
-        <dd><%= @request.vacancies_requested %></dd>
+        <dt class="text-base-content/60">Staff Needed</dt>
+        <dd class="col-span-3"><%= @request.vacancies_requested %></dd>
 
-        <dt class="text-base-content/50">Received</dt>
-        <dd><%= @request.created_at.strftime("%-d %b %Y") %></dd>
+        <dt class="text-base-content/60">Received</dt>
+        <dd class="col-span-3"><%= @request.created_at.strftime("%-d %b %Y") %></dd>
 
         <% if @request.notes.present? %>
-          <dt class="text-base-content/50">Notes from Hotel</dt>
-          <dd><%= @request.notes %></dd>
+          <dt class="text-base-content/60">Notes from Hotel</dt>
+          <dd class="col-span-3"><%= @request.notes %></dd>
         <% end %>
       </dl>
     </div>
@@ -82,14 +94,17 @@
     <%# Show submitted candidates with hotel's decisions %>
     <div class="card bg-base-100 border border-base-200 shadow-sm mb-6">
       <div class="card-body">
-        <h2 class="card-title text-base">Submitted Candidates</h2>
+        <div class="flex items-baseline gap-2">
+          <h2 class="card-title text-base">Submitted Candidates</h2>
+          <span class="text-sm text-base-content/50"><%= @request.agency_staffing_candidates.size %> total</span>
+        </div>
         <% if @request.agency_staffing_candidates.any? %>
           <table class="table table-sm mt-2">
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Roles</th>
+                <th>Gender</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -98,13 +113,7 @@
                 <tr>
                   <td class="font-medium"><%= candidate.agency_staff_member.name %></td>
                   <td class="text-sm text-base-content/60"><%= candidate.agency_staff_member.email %></td>
-                  <td>
-                    <div class="flex flex-wrap gap-1">
-                      <% candidate.agency_staff_member.roles.each do |r| %>
-                        <span class="badge badge-ghost badge-xs"><%= r.name %></span>
-                      <% end %>
-                    </div>
-                  </td>
+                  <td><%= render "gender_badge", gender: candidate.agency_staff_member.gender %></td>
                   <td>
                     <% case candidate.status
                        when "submitted" %>

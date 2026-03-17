@@ -26,7 +26,7 @@
         <% @agencies.each do |agency| %>
           <tr>
             <td class="font-medium"><%= agency.name %></td>
-            <td class="text-sm text-base-content/70"><%= mail_to agency.contact_email, agency.contact_email %></td>
+            <td class="text-sm text-base-content/70"><%= agency.contact_email %></td>
             <td class="text-sm text-base-content/70"><%= agency.invited_by.name %></td>
             <td class="text-sm text-base-content/60"><%= agency.invitation_sent_at&.strftime("%-d %b %Y") || "—" %></td>
             <td>
