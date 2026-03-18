@@ -36,9 +36,15 @@
         </div>
       </div>
       <% unless invitation.status_pending? %>
-        <span class="badge shrink-0 <%= invitation.status_accepted? ? 'badge-success' : 'badge-error' %>">
-          <%= invitation.status.humanize %>
-        </span>
+        <%
+          badge_class = case invitation.status
+                        when "accepted"   then "badge-success"
+                        when "waitlisted" then "badge-warning"
+                        else                   "badge-error"
+                        end
+          badge_label = invitation.status_waitlisted? ? "On Waiting List" : invitation.status.humanize
+        %>
+        <span class="badge shrink-0 <%= badge_class %>"><%= badge_label %></span>
       <% end %>
     </div>
 
@@ -90,13 +96,42 @@
     <% end %>
 
     <% if show_actions %>
+      <% role_full = invitation.event_role.confirmed_count >= invitation.event_role.vacancies %>
       <div class="flex items-center gap-2 mt-4">
-        <%= form_with url: accept_invitation_path(invitation), method: :patch do %>
-          <button type="submit" class="btn btn-success btn-sm"
-                  <%= "disabled" if clash_info %>
-                  data-turbo-confirm="Accept this invitation for <%= invitation.event_role.role_name %>?">
+        <% if role_full && !clash_info %>
+          <button type="button" class="btn btn-success btn-sm"
+                  onclick="document.getElementById('waitlist-modal-<%= invitation.id %>').showModal()">
             Accept
           </button>
+          <dialog id="waitlist-modal-<%= invitation.id %>" class="modal">
+            <div class="modal-box">
+              <h3 class="font-bold text-lg">Role is currently full</h3>
+              <p class="py-3 text-base-content/70">
+                All <%= invitation.event_role.vacancies %> spot(s) for
+                <strong><%= invitation.event_role.role_name %></strong> have been filled.
+                Would you like to be placed on the waiting list instead?
+              </p>
+              <div class="modal-action">
+                <form method="dialog">
+                  <button class="btn btn-ghost">Cancel</button>
+                </form>
+                <%= form_with url: waitlist_invitation_path(invitation), method: :patch do %>
+                  <button type="submit" class="btn btn-warning">Join Waiting List</button>
+                <% end %>
+              </div>
+            </div>
+            <form method="dialog" class="modal-backdrop">
+              <button>close</button>
+            </form>
+          </dialog>
+        <% else %>
+          <%= form_with url: accept_invitation_path(invitation), method: :patch do %>
+            <button type="submit" class="btn btn-success btn-sm"
+                    <%= "disabled" if clash_info %>
+                    data-turbo-confirm="Accept this invitation for <%= invitation.event_role.role_name %>?">
+              Accept
+            </button>
+          <% end %>
         <% end %>
         <%= form_with url: decline_invitation_path(invitation), method: :patch do %>
           <button type="submit" class="btn btn-outline btn-error btn-sm"

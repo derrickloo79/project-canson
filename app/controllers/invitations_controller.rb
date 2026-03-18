@@ -1,7 +1,7 @@
 class InvitationsController < ApplicationController
   before_action :authenticate_user!
   before_action :authorize_flexible_staff!
-  before_action :set_invitation, only: %i[accept decline]
+  before_action :set_invitation, only: %i[accept decline waitlist]
 
   # GET /invitations
   def index
@@ -43,6 +43,18 @@ class InvitationsController < ApplicationController
 
     @invitation.update!(status: :accepted, responded_at: Time.current)
     redirect_to invitations_path, notice: "You have accepted the invitation."
+  end
+
+  # PATCH /invitations/:id/waitlist
+  def waitlist
+    role = @invitation.event_role
+    if role.confirmed_count < role.vacancies
+      @invitation.update!(status: :accepted, responded_at: Time.current)
+      redirect_to invitations_path, notice: "A spot was available — you have been accepted!"
+    else
+      @invitation.update!(status: :waitlisted, responded_at: Time.current)
+      redirect_to invitations_path, notice: "You have been added to the waiting list."
+    end
   end
 
   # PATCH /invitations/:id/decline
