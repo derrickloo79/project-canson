@@ -25,7 +25,7 @@
 
   <%# Current invitations table %>
   <%
-    status_order = { "accepted" => 0, "pending" => 1, "withdrawn" => 2, "declined" => 3 }
+    status_order = { "accepted" => 0, "waitlisted" => 1, "pending" => 2, "withdrawn" => 3, "declined" => 4 }
     invitations  = (role.event_invitations.loaded? ? role.event_invitations.to_a : role.event_invitations.includes(:staff_member).to_a)
                      .sort_by { |inv| status_order.fetch(inv.status, 99) }
   %>
@@ -45,22 +45,25 @@
           <% invitations.each do |inv| %>
             <%
               status_badge = case inv.status
-                             when "pending"   then "badge-warning"
-                             when "accepted"  then "badge-success"
-                             when "declined"  then "badge-error"
-                             when "withdrawn" then "badge-neutral"
+                             when "pending"    then "badge-warning"
+                             when "accepted"   then "badge-success"
+                             when "waitlisted" then "badge-warning badge-outline"
+                             when "declined"   then "badge-error"
+                             when "withdrawn"  then "badge-neutral"
                              end
               sort_ts = inv.status_pending? ? inv.created_at.iso8601 : inv.responded_at&.iso8601.to_s
             %>
             <tr>
               <td class="font-medium"><%= inv.staff_member.name %></td>
               <td><%= render "gender_badge", gender: inv.staff_member.gender %></td>
-              <td><span class="badge badge-sm <%= status_badge %>"><%= inv.status.humanize %></span></td>
+              <td><span class="badge badge-sm <%= status_badge %>"><%= inv.status_waitlisted? ? "On Waiting List" : inv.status.humanize %></span></td>
               <td class="text-xs text-base-content/60" data-sort-value="<%= sort_ts %>">
                 <% if inv.status_pending? %>
                   Sent: <%= inv.created_at.strftime("%-d %b %Y %H:%M") %>
                 <% elsif inv.status_accepted? && inv.responded_at %>
                   Accepted: <%= inv.responded_at.strftime("%-d %b %Y %H:%M") %>
+                <% elsif inv.status_waitlisted? && inv.responded_at %>
+                  Waitlisted: <%= inv.responded_at.strftime("%-d %b %Y %H:%M") %>
                 <% elsif inv.status_declined? && inv.responded_at %>
                   Rejected: <%= inv.responded_at.strftime("%-d %b %Y %H:%M") %>
                 <% elsif inv.status_withdrawn? && inv.responded_at %>
