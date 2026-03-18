@@ -74,7 +74,12 @@ Rails.application.routes.draw do
   end
 
   # Agency staff roster
-  resources :agency_staff_members
+  resources :agency_staff_members do
+    member do
+      patch :blacklist
+      patch :unblacklist
+    end
+  end
 
   root to: "pages#home"
 end

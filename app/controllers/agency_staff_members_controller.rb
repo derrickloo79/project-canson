@@ -2,10 +2,13 @@ class AgencyStaffMembersController < ApplicationController
   before_action :authenticate_user!
   before_action :authorize_agency_user!
   before_action :set_agency
-  before_action :set_staff_member, only: %i[edit update destroy]
+  before_action :set_staff_member, only: %i[show edit update destroy blacklist unblacklist]
 
   def index
     @staff_members = @agency.agency_staff_members.ordered.includes(:roles)
+  end
+
+  def show
   end
 
   def new
@@ -42,6 +45,25 @@ class AgencyStaffMembersController < ApplicationController
     redirect_to agency_staff_members_path, notice: "#{name} was removed from your roster."
   end
 
+  # PATCH /agency_staff_members/:id/blacklist
+  def blacklist
+    authorize_agency_admin!
+    reason = params[:blacklist_reason].to_s.strip
+    if reason.blank?
+      redirect_to agency_staff_member_path(@staff_member), alert: "Please provide a reason for blacklisting."
+    else
+      @staff_member.blacklist!(by_user: current_user, reason: reason)
+      redirect_to agency_staff_member_path(@staff_member), notice: "\"#{@staff_member.name}\" has been blacklisted."
+    end
+  end
+
+  # PATCH /agency_staff_members/:id/unblacklist
+  def unblacklist
+    authorize_agency_admin!
+    @staff_member.unblacklist!
+    redirect_to agency_staff_member_path(@staff_member), notice: "\"#{@staff_member.name}\" has been reinstated."
+  end
+
   private
 
   def set_agency
@@ -58,5 +80,9 @@ class AgencyStaffMembersController < ApplicationController
 
   def authorize_agency_user!
     redirect_to root_path, alert: "Not authorised." unless current_user.agency_user?
+  end
+
+  def authorize_agency_admin!
+    redirect_to agency_staff_member_path(@staff_member), alert: "Not authorised." unless current_user.role_agency_admin?
   end
 end

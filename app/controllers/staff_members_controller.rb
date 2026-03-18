@@ -100,7 +100,7 @@ class StaffMembersController < ApplicationController
   end
 
   def staff_member_params
-    params.require(:staff_member).permit(:name, :email, :mobile, :gender, role_ids: [])
+    params.require(:staff_member).permit(:name, :email, :mobile, :gender, :active, role_ids: [])
   end
 
   # Ops managers and above can access staff directory

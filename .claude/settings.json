@@ -23,7 +23,9 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:3000/users/sign_in)",
       "Bash(curl -s http://127.0.0.1:3000/users/sign_in)",
       "Bash(curl -s http://127.0.0.1:3000/assets/application-8b441ae0.css)",
-      "Bash(curl -s http://127.0.0.1:3000/assets/tailwind-2d141bbd.css)"
+      "Bash(curl -s http://127.0.0.1:3000/assets/tailwind-2d141bbd.css)",
+      "Bash(bin/rails generate migration AddBlacklistToAgencyStaffMembers blacklisted:boolean blacklisted_at:datetime blacklist_reason:text blacklisted_by_id:integer --no-test-framework)",
+      "Bash(bin/rails generate migration AddActiveToStaffMembers active:boolean --no-test-framework)"
     ],
     "additionalDirectories": [
       "/Users/derrick.loo-admin/Documents/flexi_labour/app/views",

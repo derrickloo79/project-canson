@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_16_102439) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_18_015106) do
   create_table "agencies", force: :cascade do |t|
     t.string "contact_email", null: false
     t.datetime "created_at", null: false
@@ -52,6 +52,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_16_102439) do
   create_table "agency_staff_members", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.integer "agency_id", null: false
+    t.text "blacklist_reason"
+    t.boolean "blacklisted", default: false, null: false
+    t.datetime "blacklisted_at"
+    t.integer "blacklisted_by_id"
     t.datetime "created_at", null: false
     t.string "email", null: false
     t.integer "gender"
@@ -162,6 +166,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_16_102439) do
   end
 
   create_table "staff_members", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.text "blacklist_reason"
     t.boolean "blacklisted", default: false, null: false
     t.datetime "blacklisted_at"

@@ -52,16 +52,6 @@
     </div>
   </div>
 
-  <%# Active status (only shown when editing) %>
-  <% unless staff_member.new_record? %>
-    <div class="form-control">
-      <label class="flex items-center gap-3 cursor-pointer w-fit">
-        <%= f.check_box :active, class: "toggle toggle-success" %>
-        <span class="label-text">Active (available for staffing requests)</span>
-      </label>
-    </div>
-  <% end %>
-
   <%# Roles (multi-select checkboxes) %>
   <div class="form-control">
     <span class="label-text font-medium mb-2 block">Roles</span>
@@ -83,6 +73,16 @@
     <%# Hidden field so empty selection clears existing roles %>
     <%= hidden_field_tag "agency_staff_member[role_ids][]", "" %>
   </div>
+
+  <%# Active status (only shown when editing) %>
+  <% unless staff_member.new_record? %>
+    <div class="form-control">
+      <label class="flex items-center gap-2 cursor-pointer w-fit">
+        <%= f.check_box :active, class: "checkbox checkbox-sm" %>
+        <span class="text-md"><span class="font-semibold">Active</span> (available for staffing requests)</span>
+      </label>
+    </div>
+  <% end %>
 
   <div class="flex items-center gap-3 pt-2">
     <%= f.submit(staff_member.new_record? ? "Add Staff Member" : "Save Changes", class: "btn btn-primary") %>

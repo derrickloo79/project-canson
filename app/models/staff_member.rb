@@ -24,7 +24,7 @@ class StaffMember < ApplicationRecord
 
   scope :ordered,      -> { order(:name) }
   scope :blacklisted,  -> { where(blacklisted: true) }
-  scope :active,       -> { where(blacklisted: false) }
+  scope :active,       -> { where(active: true, blacklisted: false) }
 
   def blacklist!(by_user:, reason:)
     update!(

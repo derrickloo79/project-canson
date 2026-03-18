@@ -49,8 +49,10 @@
             <td>
               <% if member.blacklisted? %>
                 <span class="badge badge-error badge-sm">Blacklisted</span>
-              <% else %>
+              <% elsif member.active? %>
                 <span class="badge badge-success badge-sm">Active</span>
+              <% else %>
+                <span class="badge badge-ghost badge-sm">Inactive</span>
               <% end %>
             </td>
             <td>
