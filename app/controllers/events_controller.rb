@@ -10,7 +10,8 @@ class EventsController < ApplicationController
 
   # GET /events
   def index
-    @events = current_user.events.order(created_at: :desc)
+    scope = (current_user.role_approving_manager? || current_user.role_system_admin?) ? Event.all : current_user.events
+    @events = scope.includes(:user).order(created_at: :desc)
   end
 
   # GET /events/new — immediately creates a bare draft and redirects to step 1
@@ -116,19 +117,20 @@ class EventsController < ApplicationController
   private
 
   def set_event
-    scope = current_user.role_approving_manager? ? Event.all : current_user.events
+    scope = (current_user.role_approving_manager? || current_user.role_system_admin?) ? Event.all : current_user.events
     @event = scope.find(params[:id])
   end
 
   def authorize_ops_manager!
-    unless current_user.role_ops_manager?
+    unless current_user.role_ops_manager? || current_user.role_system_admin?
       redirect_to root_path, alert: "You are not authorised to perform this action."
     end
   end
 
   def authorize_approver!
-    unless current_user.role_approving_manager? &&
-           current_user.managed_users.include?(@event.user)
+    is_approving_manager = current_user.role_approving_manager? &&
+                           current_user.managed_users.include?(@event.user)
+    unless is_approving_manager || current_user.role_system_admin?
       redirect_to root_path, alert: "You are not authorised to perform this action."
     end
   end

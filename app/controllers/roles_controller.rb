@@ -54,6 +54,8 @@ class RolesController < ApplicationController
   end
 
   def authorize_approving_manager!
-    redirect_to root_path, alert: "Not authorised." unless current_user.role_approving_manager?
+    unless current_user.role_approving_manager? || current_user.role_system_admin?
+      redirect_to root_path, alert: "Not authorised."
+    end
   end
 end

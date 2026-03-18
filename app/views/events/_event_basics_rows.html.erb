@@ -41,9 +41,10 @@
   </dd>
 </div>
 
-<div class="col-span-4 flex flex-col gap-1">
-  <% if event.description.present? %>
+<% if event.description.present? %>
+  <div class="col-span-4 flex flex-col gap-1">
     <dt class="text-base-content/60">Description</dt>
     <dd class="font-semibold"><%= event.description %></dd>
-  <% end %>
-</div>
+  </div>
+<% end %>
+

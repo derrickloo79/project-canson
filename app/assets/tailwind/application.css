@@ -15,3 +15,6 @@
 .alert-error { @apply bg-red-50 border-red-50 text-red-600; }
 .alert-info { @apply bg-blue-50 border-blue-50 text-blue-600; }
 .alert-success { @apply bg-green-50 border-green-50 text-green-600; }
+
+thead { @apply bg-base-300; }
+th { @apply font-medium; }

@@ -16,6 +16,9 @@
       <thead>
         <tr>
           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Event Name</th>
+          <% if current_user.role_system_admin? %>
+            <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Ops Manager</th>
+          <% end %>
           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Type</th>
           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Dates</th>
           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Venue</th>
@@ -27,6 +30,9 @@
         <% @events.each do |event| %>
           <tr>
             <td class="font-medium"><%= event.event_name.presence || "(untitled draft)" %></td>
+            <% if current_user.role_system_admin? %>
+              <td class="text-sm text-base-content/70"><%= event.user.name %></td>
+            <% end %>
             <td><%= event.event_type&.humanize %></td>
             <td data-sort-value="<%= event.event_date&.iso8601 || "" %>">
               <%= event.event_date&.strftime("%d %b %Y") %>
