@@ -105,6 +105,36 @@
             </dl>
           </div>
         </div>
+
+        <%
+          ov_roles    = @event.event_roles.size
+          ov_total    = @event.total_vacancies
+          ov_filled   = @event.confirmed_staff_count
+          ov_inhouse  = @event.event_roles.sum(&:inhouse_confirmed_count)
+          ov_agency   = @event.event_roles.sum(&:agency_confirmed_count)
+        %>
+        <div class="card bg-base-200 shadow-sm mt-4">
+          <div class="card-body">
+            <dl class="grid grid-cols-4 gap-3 text-sm">
+              <div>
+                <dt class="text-base-content/60 text-xs uppercase tracking-wide">Roles</dt>
+                <dd class="font-medium text-3xl mt-1"><%= ov_roles %></dd>
+              </div>
+              <div>
+                <dt class="text-base-content/60 text-xs uppercase tracking-wide">Vacancies Filled</dt>
+                <dd class="flex items-baseline text-base mt-1 gap-1 text-base-content/60"><span class="font-medium text-3xl text-base-content/100"><%= ov_filled %></span> / <%= ov_total %></dd>
+              </div>
+              <div>
+                <dt class="text-base-content/60 text-xs uppercase tracking-wide">In-House Staff</dt>
+                <dd class="font-medium text-3xl mt-1"><%= ov_inhouse %></dd>
+              </div>
+              <div>
+                <dt class="text-base-content/60 text-xs uppercase tracking-wide">Agency Staff</dt>
+                <dd class="font-medium text-3xl mt-1"><%= ov_agency %></dd>
+              </div>
+            </dl>
+          </div>
+        </div>
       </div>
 
       <%# Tab 2 — Roles & Vacancies %>
