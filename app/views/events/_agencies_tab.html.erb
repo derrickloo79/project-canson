@@ -127,8 +127,8 @@
                                   <th class="w-1/5">Name</th>
                                   <th class="w-1/5">Email</th>
                                   <th class="w-1/5">Mobile</th>
-                                  <th class="w-1/5">Gender</th>
-                                  <th class="w-1/5">Status</th>
+                                  <th class="w-[8%]">Gender</th>
+                                  <th class="w-[32%]">Status</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -141,18 +141,25 @@
                                     <td><%= render "gender_badge", gender: m.gender %></td>
                                     <td>
                                       <% if candidate.status_submitted? %>
-                                        <div class="flex items-center gap-1 flex-wrap">
+                                        <div class="flex items-center gap-1 flex-nowrap">
                                           <form data-turbo="false" action="<%= reject_agency_staffing_candidate_path(candidate) %>" method="post" class="flex items-center gap-1">
                                             <%= hidden_field_tag :_method, :patch %>
                                             <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
                                             <input type="text" name="rejection_reason" placeholder="Reason (optional)"
                                                    class="input input-xs input-bordered w-32" />
-                                            <button type="submit" class="btn btn-xs btn-error btn-outline">Reject</button>
+                                            <button type="submit" class="btn btn-xs btn-error btn-outline btn-square" title="Reject">
+                                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                              </svg>
+                                            </button>
                                           </form>
                                           <%= button_to accept_agency_staffing_candidate_path(candidate),
                                               method: :patch,
-                                              class: "btn btn-xs btn-success" do %>
-                                            Accept
+                                              class: "btn btn-xs btn-success btn-square",
+                                              title: "Accept" do %>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
                                           <% end %>
                                         </div>
                                       <% elsif candidate.status_accepted? %>
