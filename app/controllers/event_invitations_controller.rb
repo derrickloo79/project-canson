@@ -7,16 +7,16 @@ class EventInvitationsController < ApplicationController
   def destroy
     inv = @event_role.event_invitations.find(params[:id])
     inv.update!(status: :withdrawn, responded_at: Time.current)
-    redirect_to event_path(@event_role.event), notice: "Invitation withdrawn for #{inv.staff_member.name}."
+    redirect_to event_path(@event_role.event, anchor: "tab-staff"), notice: "Invitation withdrawn for #{inv.staff_member.name}."
   rescue ActiveRecord::RecordNotFound
-    redirect_to event_path(@event_role.event), alert: "Invitation not found."
+    redirect_to event_path(@event_role.event, anchor: "tab-staff"), alert: "Invitation not found."
   end
 
   # POST /events/:event_id/event_roles/:event_role_id/event_invitations
   def create
     ids = Array(params[:staff_member_ids]).reject(&:blank?)
     if ids.empty?
-      redirect_to event_path(@event_role.event), alert: "No staff selected." and return
+      redirect_to event_path(@event_role.event, anchor: "tab-staff"), alert: "No staff selected." and return
     end
 
     invited = []
@@ -32,7 +32,7 @@ class EventInvitationsController < ApplicationController
 
     notice = invited.any? ? "Invited: #{invited.to_sentence}." : nil
     alert  = errors.any?  ? errors.uniq.to_sentence : nil
-    redirect_to event_path(@event_role.event), notice: notice, alert: alert
+    redirect_to event_path(@event_role.event, anchor: "tab-staff"), notice: notice, alert: alert
   end
 
   private
