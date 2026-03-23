@@ -89,10 +89,12 @@
                           <span class="badge badge-info badge-sm">Submitted</span>
                         <% when "declined" %>
                           <span class="badge badge-error badge-sm">Declined</span>
+                        <% when "closed" %>
+                          <span class="badge badge-neutral badge-sm">Closed</span>
                         <% end %>
                       </td>
                       <td>
-                        <% if req.status_submitted? %>
+                        <% if req.status_submitted? || req.status_closed? %>
                           <span class="text-sm">
                             <%= req.candidates_submitted_count %> submitted,
                             <%= req.candidates_accepted_count %> accepted
@@ -113,8 +115,8 @@
                       </td>
                     </tr>
 
-                    <%# Candidate sub-rows when submitted %>
-                    <% if req.status_submitted? && req.agency_staffing_candidates.any? %>
+                    <%# Candidate sub-rows when submitted or closed %>
+                    <% if (req.status_submitted? || req.status_closed?) && req.agency_staffing_candidates.any? %>
                       <tr>
                         <td colspan="6" class="pt-0 pb-3 px-0">
                           <div class="bg-base-100 rounded-box p-6 border border-base-300">
@@ -156,7 +158,8 @@
                                           <%= button_to accept_agency_staffing_candidate_path(candidate),
                                               method: :patch,
                                               class: "btn btn-xs btn-success btn-square",
-                                              title: "Accept" do %>
+                                              title: "Accept",
+                                              data: { turbo: false } do %>
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                             </svg>
@@ -177,6 +180,16 @@
                                 <% end %>
                               </tbody>
                             </table>
+                            <% if req.agency_staffing_candidates.any?(&:status_submitted?) %>
+                              <div class="flex justify-end mt-3">
+                                <%= button_to accept_all_agency_staffing_request_path(req),
+                                    method: :patch,
+                                    class: "btn btn-primary btn-sm",
+                                    data: { turbo: false, turbo_confirm: "Accept all submitted candidates from #{req.agency.name}?" } do %>
+                                  Accept All
+                                <% end %>
+                              </div>
+                            <% end %>
                           </div>
                         </td>
                       </tr>

@@ -56,6 +56,8 @@
           <span class="badge badge-error">Declined</span>
         <% when "cancelled" %>
           <span class="badge badge-ghost">Cancelled</span>
+        <% when "closed" %>
+          <span class="badge badge-neutral">Closed</span>
         <% end %>
       </div>
 
@@ -154,6 +156,52 @@
         </div>
       </div>
     <% end %>
+
+  <% elsif @request.status_closed? %>
+    <div class="alert alert-info mb-6">
+      <span>The hotel has reviewed all submitted candidates. No further action is needed for this request.</span>
+    </div>
+    <div class="card bg-base-100 border border-base-200 shadow-sm mb-6">
+      <div class="card-body">
+        <div class="flex items-baseline gap-2">
+          <h2 class="card-title text-base">Submitted Candidates</h2>
+          <span class="text-sm text-base-content/50"><%= @request.agency_staffing_candidates.size %> total</span>
+        </div>
+        <% if @request.agency_staffing_candidates.any? %>
+          <table class="table mt-2">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Gender</th>
+                <th>Decision</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @request.agency_staffing_candidates.each do |candidate| %>
+                <tr>
+                  <td class="font-medium"><%= candidate.agency_staff_member.name %></td>
+                  <td class="text-sm text-base-content/60"><%= candidate.agency_staff_member.email %></td>
+                  <td><%= render "gender_badge", gender: candidate.agency_staff_member.gender %></td>
+                  <td>
+                    <% if candidate.status_accepted? %>
+                      <span class="badge badge-success badge-sm">Accepted</span>
+                    <% elsif candidate.status_rejected? %>
+                      <div class="flex items-center gap-1.5">
+                        <span class="badge badge-error badge-sm">Rejected</span>
+                        <% if candidate.rejection_reason.present? %>
+                          <span class="text-xs text-base-content/50"><%= candidate.rejection_reason %></span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% end %>
+      </div>
+    </div>
 
   <% elsif @request.status_pending? && current_user.role_agency_admin? %>
     <%# Submit candidates form %>

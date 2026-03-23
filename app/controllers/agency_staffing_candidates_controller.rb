@@ -5,6 +5,7 @@ class AgencyStaffingCandidatesController < ApplicationController
 
   def accept
     @candidate.update!(status: :accepted, accepted_at: Time.current)
+    @candidate.agency_staffing_request.close_if_reviewed!
     redirect_to event_path(@candidate.agency_staffing_request.event_role.event, anchor: "tab-agencies"),
                 notice: "#{@candidate.agency_staff_member.name} accepted."
   end
@@ -15,6 +16,7 @@ class AgencyStaffingCandidatesController < ApplicationController
       rejected_at: Time.current,
       rejection_reason: params[:rejection_reason].to_s.strip.presence
     )
+    @candidate.agency_staffing_request.close_if_reviewed!
     redirect_to event_path(@candidate.agency_staffing_request.event_role.event, anchor: "tab-agencies"),
                 notice: "#{@candidate.agency_staff_member.name} rejected."
   end

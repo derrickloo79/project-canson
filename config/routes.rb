@@ -21,11 +21,17 @@ Rails.application.routes.draw do
     resources :agency_staffing_requests, only: %i[create destroy]
   end
 
-  # Hotel side: accept/reject individual agency candidates
+  # Hotel side: accept/reject individual agency candidates; bulk accept all
   resources :agency_staffing_candidates, only: [] do
     member do
       patch :accept
       patch :reject
+    end
+  end
+
+  resources :agency_staffing_requests, only: [] do
+    member do
+      patch :accept_all
     end
   end
 

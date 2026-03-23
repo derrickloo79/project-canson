@@ -5,7 +5,7 @@ class AgencyStaffingRequest < ApplicationRecord
   has_many :agency_staffing_candidates, dependent: :destroy
   has_many :agency_staff_members, through: :agency_staffing_candidates
 
-  enum :status, { pending: 0, declined: 1, submitted: 2, cancelled: 3 }, prefix: true
+  enum :status, { pending: 0, declined: 1, submitted: 2, cancelled: 3, closed: 4 }, prefix: true
 
   validates :vacancies_requested, presence: true,
             numericality: { greater_than: 0, only_integer: true }
@@ -18,5 +18,9 @@ class AgencyStaffingRequest < ApplicationRecord
 
   def candidates_submitted_count
     agency_staffing_candidates.count
+  end
+
+  def close_if_reviewed!
+    update!(status: :closed) if status_submitted? && agency_staffing_candidates.status_submitted.none?
   end
 end
