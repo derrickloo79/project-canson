@@ -9,7 +9,7 @@
   <div class="space-y-4">
     <% event.event_roles.each do |role| %>
       <%
-        requests         = role.agency_staffing_requests.reject(&:status_cancelled?)
+        requests         = role.agency_staffing_requests.reject(&:status_cancelled?).sort_by(&:created_at)
         requested_ids    = requests.map(&:agency_id)
         available        = connected_agencies.reject { |a| requested_ids.include?(a.id) }
         inhouse_cnt      = role.inhouse_confirmed_count
@@ -129,8 +129,8 @@
                                   <th class="w-1/5">Name</th>
                                   <th class="w-1/5">Email</th>
                                   <th class="w-1/5">Mobile</th>
-                                  <th class="w-[8%]">Gender</th>
-                                  <th class="w-[32%]">Status</th>
+                                  <th class="w-[15%]">Gender</th>
+                                  <th class="w-[25%]">Status</th>
                                 </tr>
                               </thead>
                               <tbody>

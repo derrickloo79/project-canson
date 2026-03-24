@@ -11,8 +11,8 @@
     <p class="mt-1">Create your first event to get started.</p>
   </div>
 <% else %>
-  <div class="overflow-x-auto">
-    <table class="table table-zebra w-full" data-controller="table-sort">
+  <div class="overflow-x-auto rounded-box border border-base-content/10">
+    <table class="table w-full" data-controller="table-sort">
       <thead>
         <tr>
           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Event Name</th>
@@ -33,15 +33,15 @@
             <% if current_user.role_system_admin? %>
               <td class="text-sm text-base-content/70"><%= event.user.name %></td>
             <% end %>
-            <td><%= event.event_type&.humanize %></td>
-            <td data-sort-value="<%= event.event_date&.iso8601 || "" %>">
+            <td class="text-base-content/60"><%= event.event_type&.humanize %></td>
+            <td  class="text-base-content/60" data-sort-value="<%= event.event_date&.iso8601 || "" %>">
               <%= event.event_date&.strftime("%d %b %Y") %>
               <% if event.multi_day? && event.event_end_date %>
                 <span class="text-base-content/50"> – </span>
                 <%= event.event_end_date.strftime("%d %b %Y") %>
               <% end %>
             </td>
-            <td><%= event.venue %></td>
+            <td class="text-base-content/60"><%= event.venue %></td>
             <td>
               <div class="flex flex-col items-start gap-1">
                 <%= render "event_status_badge", event: event %>

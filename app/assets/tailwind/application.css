@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+@utility btn { @apply rounded-lg; }
+
 .input, .select { height: 2.25rem; }
 .container { max-width: none; }
 .badge { @apply rounded-full; }
@@ -16,5 +18,6 @@
 .alert-info { @apply bg-blue-50 border-blue-50 text-blue-600; }
 .alert-success { @apply bg-green-50 border-green-50 text-green-600; }
 
-thead { @apply bg-base-300; }
-th { @apply font-medium; }
+thead {   }
+th { @apply font-light text-xs; } 
+th, td { @apply border-b-neutral-200; }

@@ -57,7 +57,7 @@
               <td class="font-medium"><%= inv.staff_member.name %></td>
               <td><%= render "gender_badge", gender: inv.staff_member.gender %></td>
               <td><span class="badge badge-sm <%= status_badge %>"><%= inv.status_waitlisted? ? "On Waiting List" : inv.status.humanize %></span></td>
-              <td class="text-xs text-base-content/60" data-sort-value="<%= sort_ts %>">
+              <td class="text-base-content/60" data-sort-value="<%= sort_ts %>">
                 <% if inv.status_pending? %>
                   Sent: <%= inv.created_at.strftime("%-d %b %Y %H:%M") %>
                 <% elsif inv.status_accepted? && inv.responded_at %>
