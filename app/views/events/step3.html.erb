@@ -23,22 +23,28 @@
 
       <%# Event Basics %>
       <h3 class="font-semibold text-base border-b border-base-300 pb-1 mb-3">Event Basics</h3>
-      <dl class="grid grid-cols-4 gap-x-4 gap-y-2 text-sm mb-6">
-        <dt class="text-base-content/60">Event Name</dt>
-        <dd class="col-span-3 font-medium"><%= @event.event_name %></dd>
+      <dl class="grid grid-cols-4 gap-3 text-sm mb-6">
+        <div class="col-span-4 flex flex-col gap-1">
+          <dt class="text-base-content/60">Event Name</dt>
+          <dd class="font-semibold"><%= @event.event_name %></dd>
+        </div>
 
-        <dt class="text-base-content/60">Date</dt>
-        <dd class="col-span-3">
-          <%= @event.event_date&.strftime("%a, %-d %b %Y") %>
-          <% if @event.multi_day? && @event.event_end_date %>
-            <span class="text-base-content/50"> – </span>
-            <%= @event.event_end_date.strftime("%a, %-d %b %Y") %>
-            <span class="badge badge-outline badge-xs ml-1 uppercase">Multi-day</span>
-          <% end %>
-        </dd>
+        <div class="col-span-2 flex flex-col gap-1">
+          <dt class="text-base-content/60">Date</dt>
+          <dd class="font-semibold"">
+            <%= @event.event_date&.strftime("%a, %-d %b %Y") %>
+            <% if @event.multi_day? && @event.event_end_date %>
+              <span class="text-base-content/50"> – </span>
+              <%= @event.event_end_date.strftime("%a, %-d %b %Y") %>
+              <span class="badge badge-outline badge-xs ml-1 uppercase text-base-content/60">Multi-day</span>
+            <% end %>
+          </dd>
+        </div>
 
-        <dt class="text-base-content/60">Venue</dt>
-        <dd class="col-span-3"><%= @event.venue %></dd>
+        <div class="col-span-2 flex flex-col gap-1">
+          <dt class="text-base-content/60">Venue</dt>
+          <dd class="font-semibold"><%= @event.venue %></dd>
+        </div>
 
         <%= render "event_basics_rows", event: @event %>
       </dl>
@@ -54,7 +60,7 @@
       </h3>
 
       <% if @event.event_roles.any? %>
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto bg-base-100 rounded-box border border-base-content/10">
           <table class="table w-full">
             <thead>
               <tr>
@@ -93,8 +99,6 @@
   <div class="flex items-center justify-between">
     <%= link_to "Cancel", events_path, class: "btn btn-ghost" %>
     <div class="flex items-center gap-1">
-      <%= button_to "Save Draft", save_draft_event_path(@event),
-          method: :patch, class: "btn btn-outline" %>
       <%= link_to "Prev", step2_event_path(@event), class: "btn btn-outline" %>
       <%= button_to "Submit for Approval", update_step3_event_path(@event),
           method: :patch, class: "btn btn-primary" %>
