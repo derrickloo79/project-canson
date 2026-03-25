@@ -69,7 +69,7 @@
           <div class="dropdown dropdown-end">
             <div tabindex="0" role="button" class="flex items-center gap-2 text-sm text-base-content/70 hover:text-base-content transition-colors cursor-pointer">
               <% initials = current_user.name.presence&.then { |n| parts = n.split; "#{parts.first[0]}#{parts.last[0]}" if parts.size >= 1 } %>
-              <div class="w-7 h-7 rounded-full bg-neutral text-neutral-content flex items-center justify-center text-xs font-semibold uppercase">
+              <div class="w-7 h-7 rounded-full <%= avatar_color(current_user) %> text-white flex items-center justify-center text-xs font-semibold uppercase">
                 <%= initials || current_user.email[0] %>
               </div>
               <%= current_user.name.presence || current_user.email %>

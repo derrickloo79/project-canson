@@ -50,7 +50,7 @@
                 <% mgr = event.user %>
                 <div class="flex items-center gap-2">
                   <div class="avatar avatar-placeholder">
-                    <div class="bg-neutral text-neutral-content rounded-full w-7 text-xs">
+                    <div class="<%= avatar_color(mgr) %> text-white rounded-full w-7 text-xs">
                       <span><%= mgr.name.split.map(&:first).first(2).join.upcase %></span>
                     </div>
                   </div>
