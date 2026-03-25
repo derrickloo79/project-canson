@@ -22,6 +22,9 @@
           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Type</th>
           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Dates</th>
           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Venue</th>
+          <% if current_user.role_approving_manager? %>
+            <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Ops Manager</th>
+          <% end %>
           <th data-action="click->table-sort#sort" data-table-sort-target="header" class="cursor-pointer select-none">Status</th>
           <th></th>
         </tr>
@@ -42,6 +45,19 @@
               <% end %>
             </td>
             <td class="text-base-content/60"><%= event.venue %></td>
+            <% if current_user.role_approving_manager? %>
+              <td>
+                <% mgr = event.user %>
+                <div class="flex items-center gap-2">
+                  <div class="avatar avatar-placeholder">
+                    <div class="bg-neutral text-neutral-content rounded-full w-7 text-xs">
+                      <span><%= mgr.name.split.map(&:first).first(2).join.upcase %></span>
+                    </div>
+                  </div>
+                  <span class="text-sm"><%= mgr.name %></span>
+                </div>
+              </td>
+            <% end %>
             <td>
               <div class="flex flex-col items-start gap-1">
                 <%= render "event_status_badge", event: event %>
